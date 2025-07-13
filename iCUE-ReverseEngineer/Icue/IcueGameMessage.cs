@@ -7,8 +7,13 @@ public class IcueGameMessage
 {
     public string Method { get; set; } = string.Empty;
     
-    [JsonExtensionData]
-    public IDictionary<string, JsonElement> Params { get; set; } = new Dictionary<string, JsonElement>();
+    public IcueGameMessageParams? Params { get; set; }
+}
+
+public class IcueGameMessageParams
+{
+    public string? Name { get; set; }
+    public string? GameSdkProtocolVersion { get; set; }
 }
 
 [JsonSerializable(typeof(IcueGameMessage))]

@@ -23,11 +23,6 @@ public static class IpcLogger
             outBufferSize: 4096,
             pipeSecurity: ps
         );
-        if (pipe.CanTimeout)
-        {
-            pipe.ReadTimeout = 30000; // Set a read timeout of 30 seconds
-            pipe.WriteTimeout = 30000; // Set a write timeout of 30 seconds
-        }
         
         Console.WriteLine("Waiting for connection on pipe: " + pipe.SafePipeHandle);
         return pipe;
@@ -42,7 +37,7 @@ public static class IpcLogger
 
         var pipe = NamedPipeServerStreamAcl.Create(
             pipeName,
-            PipeDirection.Out,                     // PIPE_ACCESS_INBOUND
+            PipeDirection.Out,
             maxNumberOfServerInstances: 1,        // nMaxInstances = 1
             transmissionMode: PipeTransmissionMode.Byte,
             options: PipeOptions.Asynchronous,    // FILE_FLAG_OVERLAPPED

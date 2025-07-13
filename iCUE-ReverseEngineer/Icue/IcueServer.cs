@@ -2,27 +2,27 @@
 using System.Security.AccessControl;
 using System.Security.Principal;
 using System.Text;
-using System.Text.Json.Serialization;
 
 namespace iCUE_ReverseEngineer.Icue;
 
-public class IcueServer
+public class IcueServer: IDisposable, IAsyncDisposable
 {
-    public EventHandler<string>? UtilityOutMessage;
+    // I don't know how this is generated... Works on my machine, but might not work on others.
+    private const string Guid = "{4A48E328-2134-4D19-B31F-764ADEFB844C}";
     
-    private readonly NamedPipeServerStream _utilityCallback = IpcLogger.CreateOutPipe("CorsairUtilityEngine\\{4A48E328-2134-4D19-B31F-764ADEFB844C}_callback");
+    private readonly NamedPipeServerStream _utilityCallback = IpcLogger.CreateOutPipe($"CorsairUtilityEngine\\{Guid}_callback");
     private readonly NamedPipeServerStream _utilityInPipe;
-    private readonly NamedPipeServerStream _utilityOut = IpcLogger.CreateOutPipe("CorsairUtilityEngine\\{4A48E328-2134-4D19-B31F-764ADEFB844C}_out");
+    private readonly NamedPipeServerStream _utilityOut = IpcLogger.CreateOutPipe($"CorsairUtilityEngine\\{Guid}_out");
     
-    private readonly List<IcueToGameConnection> _gameConnections = new();
+    private readonly List<GameHandler> _games = [];
 
     public IcueServer()
     {
-        Console.WriteLine("Creating pipe: " + "CorsairUtilityEngine\\{4A48E328-2134-4D19-B31F-764ADEFB844C}_in");
+        Console.WriteLine($"Creating pipe: CorsairUtilityEngine\\{Guid}_in");
         var ps = new PipeSecurity();
         ps.AddAccessRule(new PipeAccessRule(WindowsIdentity.GetCurrent().User!, PipeAccessRights.FullControl, AccessControlType.Allow));
         _utilityInPipe = NamedPipeServerStreamAcl.Create(
-            "CorsairUtilityEngine\\{4A48E328-2134-4D19-B31F-764ADEFB844C}_in",
+            $"CorsairUtilityEngine\\{Guid}_in",
             PipeDirection.In,                     // PIPE_ACCESS_INBOUND
             maxNumberOfServerInstances: 1,        // nMaxInstances = 1
             transmissionMode: PipeTransmissionMode.Byte,
@@ -40,13 +40,14 @@ public class IcueServer
         _utilityOut.BeginWaitForConnection(UtilityOut, _utilityOut);
     }
 
-    private void UtilityCallback(IAsyncResult ar)
+    private static void UtilityCallback(IAsyncResult ar)
     {
-        Console.WriteLine("Utility Callback connection");
-        
-        // apparently this pipe is never used
+        Console.WriteLine("[UtilityCallback] connection");
+    }
 
-        Console.WriteLine("UtilityCallback Exited");
+    private static void UtilityOut(IAsyncResult ar)
+    {
+        Console.WriteLine("[UtilityOut] connection");
     }
 
     async void UtilityIn(IAsyncResult ar)
@@ -73,38 +74,69 @@ public class IcueServer
         Console.WriteLine($"[UtilityIn] Decoded message (len {msgLen}): {gamePid}");
 
         var gameConnection = new IcueToGameConnection(gamePid);
-        _gameConnections.Add(gameConnection);
-        await gameConnection.Run();
+        var gameHandler = new GameHandler(gameConnection);
+        gameHandler.GameDisconnected += HandleGameDisconnected;
+        _games.Add(gameHandler);
+        gameConnection.Run();
 
         await Task.Delay(1200);
         var pipeNameMessage = $@"\\.\pipe\{gamePid}\{{4e0c98fd-e062-49d6-8f02-277ac54ead5d}}";
-        UtilityOutMessage?.Invoke(this, pipeNameMessage);
+        SendUtilityOut(pipeNameMessage);
 
         //run in another thread to reset stack
-        Task.Run(() =>
+        _ = Task.Run(() =>
         {
             pipe.BeginWaitForConnection(UtilityIn, pipe);
         });
     }
 
-    void UtilityOut(IAsyncResult ar)
+    private void RestartGameWait()
     {
-        Console.WriteLine("[UtilityOut] connection");
-        var pipe = (NamedPipeServerStream)ar.AsyncState!;
-        
-        UtilityOutMessage += (sender, message) =>
+        Console.WriteLine("Restarting wait for connection.");
+        if (_utilityOut.IsConnected)
         {
-            Console.WriteLine($"[UtilityOut] Sending:\n{message}");
-            var msgBytes = Encoding.UTF8.GetBytes(message + "\0"); // null-terminated
-            // 4-byte length prefix (little endian)
-            var lengthPrefix = BitConverter.GetBytes(msgBytes.Length);
-            pipe.Write(lengthPrefix, 0, lengthPrefix.Length);
-            pipe.Write(msgBytes, 0, msgBytes.Length);
-            pipe.Flush();
-            Console.WriteLine("Utility Out message sent.");
-        };
-
-        Console.WriteLine("[UtilityOut] Exited");
+            _utilityOut.Write([]);
+            _utilityOut.Flush();
+            _utilityOut.Disconnect();
+        }
+        _utilityOut.BeginWaitForConnection(UtilityOut, _utilityOut);
+        _utilityCallback.BeginWaitForConnection(UtilityCallback, _utilityCallback);
     }
 
+    private void HandleGameDisconnected(object? sender, EventArgs e)
+    {
+        _games.Remove((GameHandler)sender);
+        RestartGameWait();
+    }
+
+    void SendUtilityOut(string message)
+    {
+        Console.WriteLine($"[UtilityOut] Sending:\n{message}");
+        var msgBytes = Encoding.UTF8.GetBytes(message + "\0"); // null-terminated
+        // 4-byte length prefix (little endian)
+        var lengthPrefix = BitConverter.GetBytes(msgBytes.Length);
+        _utilityOut.Write(lengthPrefix, 0, lengthPrefix.Length);
+        _utilityOut.Write(msgBytes, 0, msgBytes.Length);
+        _utilityOut.Flush();
+        Console.WriteLine("Utility Out message sent.");
+    }
+
+    public void Dispose()
+    {
+        _utilityCallback.Dispose();
+        _utilityInPipe.Dispose();
+        _utilityOut.Dispose();
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        foreach (var gameHandler in _games)
+        {
+            gameHandler.Dispose();
+        }
+        
+        await _utilityCallback.DisposeAsync();
+        await _utilityInPipe.DisposeAsync();
+        await _utilityOut.DisposeAsync();
+    }
 }
