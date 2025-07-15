@@ -6,6 +6,18 @@
         <RootNamespace>iCUE_ReverseEngineer</RootNamespace>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
+        
+        <Optimize>true</Optimize>
+        <SelfContained>true</SelfContained>
+        <PublishSelfContained>true</PublishSelfContained>
+        <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+        <ReadyToRun>true</ReadyToRun>
+        <ReadyToRunComposite>true</ReadyToRunComposite>
+        <Trimmed>true</Trimmed>
+        <PublishTrimmed>true</PublishTrimmed>
+
+        <SingleFile>true</SingleFile>
+        <PublishSingleFile>true</PublishSingleFile>
     </PropertyGroup>
 
 </Project>

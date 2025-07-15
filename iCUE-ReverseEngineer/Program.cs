@@ -1,5 +1,4 @@
-﻿
-using iCUE_ReverseEngineer.Game;
+﻿using iCUE_ReverseEngineer.Game;
 using iCUE_ReverseEngineer.Icue;
 
 const string clientArg = "--client";
