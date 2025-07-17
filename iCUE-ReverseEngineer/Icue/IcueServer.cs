@@ -5,15 +5,15 @@ using System.Text;
 
 namespace iCUE_ReverseEngineer.Icue;
 
-public sealed class IcueServer: IDisposable, IAsyncDisposable
+public sealed class IcueServer : IDisposable, IAsyncDisposable
 {
     // I don't know how this is generated... Works on my machine, but might not work on others.
     private const string Guid = "{4A48E328-2134-4D19-B31F-764ADEFB844C}";
-    
+
     private readonly NamedPipeServerStream _utilityCallback = IpcLogger.CreateOutPipe($"CorsairUtilityEngine\\{Guid}_callback");
     private readonly NamedPipeServerStream _utilityInPipe;
     private readonly NamedPipeServerStream _utilityOut = IpcLogger.CreateOutPipe($"CorsairUtilityEngine\\{Guid}_out");
-    
+
     private readonly List<GameHandler> _games = [];
 
     public IcueServer()
@@ -23,10 +23,10 @@ public sealed class IcueServer: IDisposable, IAsyncDisposable
         ps.AddAccessRule(new PipeAccessRule(WindowsIdentity.GetCurrent().User!, PipeAccessRights.FullControl, AccessControlType.Allow));
         _utilityInPipe = NamedPipeServerStreamAcl.Create(
             $"CorsairUtilityEngine\\{Guid}_in",
-            PipeDirection.In,                     // PIPE_ACCESS_INBOUND
-            maxNumberOfServerInstances: 1,        // nMaxInstances = 1
+            PipeDirection.In, // PIPE_ACCESS_INBOUND
+            maxNumberOfServerInstances: 1, // nMaxInstances = 1
             transmissionMode: PipeTransmissionMode.Byte,
-            options: PipeOptions.Asynchronous,    // FILE_FLAG_OVERLAPPED
+            options: PipeOptions.Asynchronous, // FILE_FLAG_OVERLAPPED
             inBufferSize: 4096,
             outBufferSize: 4096,
             pipeSecurity: ps
@@ -50,12 +50,11 @@ public sealed class IcueServer: IDisposable, IAsyncDisposable
         Console.WriteLine("[UtilityOut] connection");
     }
 
-    async void UtilityIn(IAsyncResult ar)
+    private async void UtilityIn(IAsyncResult ar)
     {
         Console.WriteLine("[UtilityIn] connection");
         var pipe = (NamedPipeServerStream)ar.AsyncState!;
-        
-        // read pipe message
+
         var buffer = new byte[4096];
         var bytesRead = await pipe.ReadAsync(buffer);
         if (bytesRead < 4)
@@ -84,10 +83,7 @@ public sealed class IcueServer: IDisposable, IAsyncDisposable
         SendUtilityOut(pipeNameMessage);
 
         //run in another thread to reset stack
-        _ = Task.Run(() =>
-        {
-            pipe.BeginWaitForConnection(UtilityIn, pipe);
-        });
+        _ = Task.Run(() => { pipe.BeginWaitForConnection(UtilityIn, pipe); });
     }
 
     private void RestartGameWait()
@@ -99,6 +95,7 @@ public sealed class IcueServer: IDisposable, IAsyncDisposable
             _utilityOut.Flush();
             _utilityOut.Disconnect();
         }
+
         _utilityOut.BeginWaitForConnection(UtilityOut, _utilityOut);
         _utilityCallback.BeginWaitForConnection(UtilityCallback, _utilityCallback);
     }
@@ -134,7 +131,7 @@ public sealed class IcueServer: IDisposable, IAsyncDisposable
         {
             gameHandler.Dispose();
         }
-        
+
         await _utilityCallback.DisposeAsync();
         await _utilityInPipe.DisposeAsync();
         await _utilityOut.DisposeAsync();

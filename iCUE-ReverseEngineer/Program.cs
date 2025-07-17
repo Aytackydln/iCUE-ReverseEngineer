@@ -1,10 +1,12 @@
-﻿using iCUE_ReverseEngineer.Client;
+﻿using iCUE_ReverseEngineer;
+using iCUE_ReverseEngineer.Client;
 using iCUE_ReverseEngineer.Icue;
 using GsiClient = iCUE_ReverseEngineer.Client.GsiClient;
 
 const string clientArg = "--client";
 const string sdkArg = "--sdk";
 const string serverArg = "--server";
+const string keyIdTestArg = "--keyIdTest";
 
 var arg1 = args.Length > 0 ? args[0] : null;
 
@@ -36,6 +38,14 @@ switch (arg1)
         Console.WriteLine("Starting as SDK client...");
         var gameClient = new GsiClient(ClientType.Sdk);
         await gameClient.Run();
+        break;
+    }
+    case keyIdTestArg:
+    {
+        // Run the KeyIdTest
+        Console.WriteLine("Running KeyIdTest...");
+        var keyIdTest = new KeyIdTest();
+        await keyIdTest.Run();
         break;
     }
     default:

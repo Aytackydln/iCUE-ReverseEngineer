@@ -1,6 +1,7 @@
 ﻿using System.IO.Pipes;
 using System.Text;
 using System.Text.Json;
+using iCUE_ReverseEngineer.Icue.Data;
 
 namespace iCUE_ReverseEngineer.Icue;
 
@@ -21,11 +22,11 @@ public sealed class IcueToGameConnection(string gamePid) : IDisposable, IAsyncDi
         _outPipe.BeginWaitForConnection(LogConnection("GameOut"), _outPipe);
     }
 
-    private static AsyncCallback LogConnection(string gamecallback)
+    private static AsyncCallback LogConnection(string gameCallback)
     {
         return _ =>
         {
-            Console.WriteLine(gamecallback + " connection");
+            Console.WriteLine(gameCallback + " connection");
         };
     }
 

@@ -1,4 +1,4 @@
-﻿namespace iCUE_ReverseEngineer.Client.Game;
+﻿namespace iCUE_ReverseEngineer.Client.Gsi;
 
 public class GsiIcueHandler : IIcueHandler
 {
@@ -6,6 +6,8 @@ public class GsiIcueHandler : IIcueHandler
     public List<GsiGameHandle> GameHandles { get; }
 
     private bool _stateSent;
+    
+    private readonly TaskCompletionSource _started = new();
 
     public GsiIcueHandler(GameClientConnection connection)
     {
@@ -37,6 +39,7 @@ public class GsiIcueHandler : IIcueHandler
         Console.WriteLine("[GsiGame] Sending handshake message to gameIn pipe...");
         const string handshakeMessage = """{"method":"CgSdkPerfromProtocolHandshake","params":{"gameSdkProtocolVersion":1}}""";
         await _connection.SendMessage(handshakeMessage);
+        await _started.Task;
     }
 
     public async void GameOutReceived(object? sender, string message)
@@ -78,6 +81,8 @@ public class GsiIcueHandler : IIcueHandler
         {
             return;
         }
+        
+        _started.SetResult();
 
         _stateSent = true;
         await _connection.SendMessage("""{"method":"CgSdkSetState","params":{"name":"SDKL_ScreenReactive"}}""");

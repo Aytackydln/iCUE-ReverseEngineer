@@ -1,6 +1,8 @@
-﻿namespace iCUE_ReverseEngineer.Icue.Handlers;
+﻿using iCUE_ReverseEngineer.Icue.Data;
 
-public class GsiHandler
+namespace iCUE_ReverseEngineer.Icue.Gsi;
+
+public sealed class GsiHandler
 {
     public Dictionary<string, Action<IcueGameMessage>> GameHandles { get; }
 

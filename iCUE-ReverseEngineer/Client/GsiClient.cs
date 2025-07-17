@@ -1,5 +1,5 @@
 ﻿using System.Text.RegularExpressions;
-using iCUE_ReverseEngineer.Client.Game;
+using iCUE_ReverseEngineer.Client.Gsi;
 using iCUE_ReverseEngineer.Client.Sdk;
 
 namespace iCUE_ReverseEngineer.Client;
@@ -48,6 +48,18 @@ public sealed partial class GsiClient(ClientType clientType)
             await _handler.Start();
         };
         await _icueConnection.Start();
+    }
+
+    public async Task SetColor(int ledIndex, int red, int green, int blue)
+    {
+        if (_gameClientConnection == null)
+        {
+            throw new InvalidOperationException("iCUE connection is not established.");
+        }
+
+        var previousLed = ledIndex - 1;
+        var ledColor = $$$"""{"id":{{{ledIndex}}},"method":"CorsairSetLedsColors","params":{"ledsColors":"{{{ledIndex}}},{{{red}}},{{{green}}},{{{blue}}}"}}""";
+        await _gameClientConnection.SendMessage(ledColor);
     }
 
     [GeneratedRegex(@"^CorsairUtilityEngine\\.*_in$", RegexOptions.IgnoreCase, "en-GB")]
