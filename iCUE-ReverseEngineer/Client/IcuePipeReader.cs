@@ -1,14 +1,13 @@
 ﻿using System.IO.Pipes;
 using System.Text;
 
-namespace iCUE_ReverseEngineer.Game;
+namespace iCUE_ReverseEngineer.Client;
 
 public sealed class IcuePipeReader(string pipeName) : IDisposable, IAsyncDisposable
 {
     public event EventHandler<string>? MessageReceived;
     
     private readonly NamedPipeClientStream _pipeClient = new(".", pipeName, PipeDirection.In, PipeOptions.Asynchronous);
-    private readonly byte[] _gameOutBuffer = new byte[4096];
 
     public async Task Start()
     {
@@ -22,17 +21,19 @@ public sealed class IcuePipeReader(string pipeName) : IDisposable, IAsyncDisposa
     {
         _ = Task.Run(async () =>
         {
-            var lengthRead = await _pipeClient.ReadAsync(_gameOutBuffer);
+            var lengthBuffer = new byte[4];
+            await _pipeClient.ReadExactlyAsync(lengthBuffer);
 
-            var length = BitConverter.ToInt32(_gameOutBuffer, 0);
+            var length = BitConverter.ToInt32(lengthBuffer, 0);
             if (length <= 0)
             {
                 await Console.Error.WriteLineAsync($"[{pipeName}] Invalid message length: {length}");
                 return;
             }
 
-            var messageRead = await _pipeClient.ReadAsync(_gameOutBuffer);
-            var json = Encoding.UTF8.GetString(_gameOutBuffer).Trim('\0');
+            var gameOutBuffer = new byte[length];
+            await _pipeClient.ReadExactlyAsync(gameOutBuffer);
+            var json = Encoding.UTF8.GetString(gameOutBuffer).Trim('\0');
             MessageReceived?.Invoke(this, json);
 
             ReadTask();

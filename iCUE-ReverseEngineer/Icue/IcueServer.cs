@@ -5,7 +5,7 @@ using System.Text;
 
 namespace iCUE_ReverseEngineer.Icue;
 
-public class IcueServer: IDisposable, IAsyncDisposable
+public sealed class IcueServer: IDisposable, IAsyncDisposable
 {
     // I don't know how this is generated... Works on my machine, but might not work on others.
     private const string Guid = "{4A48E328-2134-4D19-B31F-764ADEFB844C}";

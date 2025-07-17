@@ -47,10 +47,7 @@ public sealed class IcueToGameConnection(string gamePid) : IDisposable, IAsyncDi
 
     private void GameIn(IAsyncResult ar)
     {
-        Console.ForegroundColor = ConsoleColor.Black;
-        Console.BackgroundColor = ConsoleColor.White;
         Console.WriteLine("GameIn connection");
-        Console.ResetColor();
         var pipe = (NamedPipeServerStream)ar.AsyncState!;
 
         var buffer = new byte[pipe.InBufferSize];

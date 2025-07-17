@@ -1,7 +1,9 @@
-﻿using iCUE_ReverseEngineer.Game;
+﻿using iCUE_ReverseEngineer.Client;
 using iCUE_ReverseEngineer.Icue;
+using GsiClient = iCUE_ReverseEngineer.Client.GsiClient;
 
 const string clientArg = "--client";
+const string sdkArg = "--sdk";
 const string serverArg = "--server";
 
 var arg1 = args.Length > 0 ? args[0] : null;
@@ -23,8 +25,16 @@ switch (arg1)
     case clientArg:
     {
         // Start the client
-        Console.WriteLine("Starting as client...");
-        var gameClient = new GameClient();
+        Console.WriteLine("Starting as GSI client...");
+        var gameClient = new GsiClient(ClientType.Gsi);
+        await gameClient.Run();
+        break;
+    }
+    case sdkArg:
+    {
+        // Start the SDK client
+        Console.WriteLine("Starting as SDK client...");
+        var gameClient = new GsiClient(ClientType.Sdk);
         await gameClient.Run();
         break;
     }

@@ -1,11 +1,20 @@
 ﻿using System.Text.RegularExpressions;
+using iCUE_ReverseEngineer.Client.Game;
+using iCUE_ReverseEngineer.Client.Sdk;
 
-namespace iCUE_ReverseEngineer.Game;
+namespace iCUE_ReverseEngineer.Client;
 
-public partial class GameClient
+public enum ClientType
 {
-    private GameToIcueConnection? _icueConnection;
+    Gsi,
+    Sdk,
+}
+
+public sealed partial class GsiClient(ClientType clientType)
+{
+    private ClientToIcueConnection? _icueConnection;
     private GameClientConnection? _gameClientConnection;
+    private IIcueHandler? _handler;
 
     public async Task Run()
     {
@@ -21,7 +30,7 @@ public partial class GameClient
             throw new InvalidOperationException("Could not find all required iCUE pipes.");
         }
 
-        _icueConnection = new GameToIcueConnection(
+        _icueConnection = new ClientToIcueConnection(
             corsairOutPipeName.Name,
             corsairCallbackPipeName.Name,
             corsairInPipeName.Name
@@ -29,7 +38,14 @@ public partial class GameClient
         _icueConnection.GameConnected += async (_, args) =>
         {
             _gameClientConnection = new GameClientConnection(args.PipePrefix);
+            _handler = clientType switch
+            {
+                ClientType.Gsi => new GsiIcueHandler(_gameClientConnection),
+                ClientType.Sdk => new SdkIcueHandler(_gameClientConnection),
+                _ => throw new ArgumentOutOfRangeException(nameof(clientType), clientType, null)
+            };
             await _gameClientConnection.Start();
+            await _handler.Start();
         };
         await _icueConnection.Start();
     }

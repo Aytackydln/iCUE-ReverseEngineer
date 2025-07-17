@@ -1,20 +1,20 @@
 ﻿using System.IO.Pipes;
 using System.Text;
 
-namespace iCUE_ReverseEngineer.Game;
+namespace iCUE_ReverseEngineer.Client;
 
-public class GameConnectedEventArgs(string pipePrefix) : EventArgs
+public class ClientConnectedEventArgs(string pipePrefix) : EventArgs
 {
     public string PipePrefix { get; } = pipePrefix;
 }
 
-public class GameToIcueConnection(
+public class ClientToIcueConnection(
     string corsairOutPipeName,
     string corsairCallbackPipeName,
     string corsairInPipeName
 )
 {
-    public event EventHandler<GameConnectedEventArgs>? GameConnected;
+    public event EventHandler<ClientConnectedEventArgs>? GameConnected;
     
     private readonly NamedPipeClientStream _corsairOutListener = new(".", corsairOutPipeName, PipeDirection.In, PipeOptions.Asynchronous);
     private readonly NamedPipeClientStream _corsairCallbackListener = new(".", corsairCallbackPipeName, PipeDirection.In, PipeOptions.Asynchronous);
@@ -46,20 +46,26 @@ public class GameToIcueConnection(
     private async Task SendPid()
     {
         var pid = Environment.ProcessId;
-        var msg = $":pid:{pid}\0"; // null-terminated
-        var msgBytes = Encoding.UTF8.GetBytes(msg);
-
-        var lengthPrefix = BitConverter.GetBytes(msgBytes.Length);
-        var fullMessage = new byte[lengthPrefix.Length + msgBytes.Length];
-        Array.Copy(lengthPrefix, fullMessage, lengthPrefix.Length);
-        Array.Copy(msgBytes, 0, fullMessage, lengthPrefix.Length, msgBytes.Length);
-
-        await _corsairInPipe.WriteAsync(fullMessage);
-        await _corsairInPipe.FlushAsync();
-        
-        Console.WriteLine($"[CorsairIn] Sent PID: {pid}");
+        await SendInMessage($":pid:{pid}");
     }
 
+    private async Task SendInMessage(string message)
+    {
+        Console.WriteLine($"[CorsairIn]:\n{message}");
+        if (!_corsairInPipe.IsConnected)
+        {
+            Console.WriteLine("[CorsairIn] Corsair In Pipe is not connected.");
+            return;
+        }
+
+        var msgBytes = Encoding.UTF8.GetBytes(message + "\0"); // null-terminated
+        // 4-byte length prefix (little endian)
+        var lengthPrefix = BitConverter.GetBytes(msgBytes.Length);
+        
+        await _corsairInPipe.WriteAsync(lengthPrefix);
+        await _corsairInPipe.WriteAsync(msgBytes);
+        await _corsairInPipe.FlushAsync();
+    }
 
     private void CorsairOutTask()
     {
@@ -84,7 +90,7 @@ public class GameToIcueConnection(
             // ack by writing to the Corsair in pipe?
             _corsairInPipe.Write([], 0, 0);
             
-            GameConnected?.Invoke(this, new GameConnectedEventArgs(pipePrefix));
+            GameConnected?.Invoke(this, new ClientConnectedEventArgs(pipePrefix));
         });
     }
 

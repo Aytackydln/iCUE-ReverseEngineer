@@ -1,5 +1,4 @@
-﻿using System.Text.Json;
-using System.Text.Json.Serialization;
+﻿using System.Text.Json.Serialization;
 
 namespace iCUE_ReverseEngineer.Icue;
 
@@ -14,6 +13,7 @@ public class IcueGameMessageParams
 {
     public string? Name { get; set; }
     public string? GameSdkProtocolVersion { get; set; }
+    public string? DeviceIndex { get; set; }
 }
 
 [JsonSerializable(typeof(IcueGameMessage))]
