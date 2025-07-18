@@ -2,6 +2,10 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "iCUE-ReverseEngineer", "iCUE-ReverseEngineer\iCUE-ReverseEngineer.csproj", "{4B97485F-6870-41B0-B309-B4D1F9265B9E}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "iCUE-ReverseEngineer.Terminal", "iCUE-ReverseEngineer.Terminal\iCUE-ReverseEngineer.Terminal.csproj", "{3803E94A-300E-4824-8455-29E56F171B54}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "iCUE-ReverseEngineer.Avalonia", "iCUE-ReverseEngineer.Avalonia\iCUE-ReverseEngineer.Avalonia.csproj", "{99EA7538-BC74-4B60-8232-5E969B9184F2}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -12,5 +16,13 @@ Global
 		{4B97485F-6870-41B0-B309-B4D1F9265B9E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4B97485F-6870-41B0-B309-B4D1F9265B9E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4B97485F-6870-41B0-B309-B4D1F9265B9E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3803E94A-300E-4824-8455-29E56F171B54}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3803E94A-300E-4824-8455-29E56F171B54}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3803E94A-300E-4824-8455-29E56F171B54}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3803E94A-300E-4824-8455-29E56F171B54}.Release|Any CPU.Build.0 = Release|Any CPU
+		{99EA7538-BC74-4B60-8232-5E969B9184F2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{99EA7538-BC74-4B60-8232-5E969B9184F2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{99EA7538-BC74-4B60-8232-5E969B9184F2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{99EA7538-BC74-4B60-8232-5E969B9184F2}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

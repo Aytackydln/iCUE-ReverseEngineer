@@ -45,7 +45,7 @@ public class SdkIcueHandler : IIcueHandler
         await _started.Task;
     }
 
-    public async void GameOutReceived(object? sender, string message)
+    private async void GameOutReceived(object? sender, string message)
     {
         Console.ForegroundColor = ConsoleColor.Green;
         Console.WriteLine($"[GameOut]:\n{message}");
@@ -61,7 +61,7 @@ public class SdkIcueHandler : IIcueHandler
         await handle.DoHandle(message);
     }
 
-    public void GameCallbackReceived(object? sender, string message)
+    private void GameCallbackReceived(object? sender, string message)
     {
         Console.ForegroundColor = ConsoleColor.Green;
         Console.BackgroundColor = ConsoleColor.DarkMagenta;

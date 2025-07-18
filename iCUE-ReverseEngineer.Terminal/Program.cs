@@ -1,7 +1,5 @@
-﻿using iCUE_ReverseEngineer;
+﻿using iCUE_ReverseEngineer_Terminal;
 using iCUE_ReverseEngineer.Client;
-using iCUE_ReverseEngineer.Icue;
-using GsiClient = iCUE_ReverseEngineer.Client.GsiClient;
 
 const string clientArg = "--client";
 const string sdkArg = "--sdk";
@@ -16,12 +14,12 @@ switch (arg1)
         // If no argument is provided, print usage and exit
         Console.WriteLine("Usage: iCUE-ReverseEngineer [--client | --server]");
         Console.WriteLine("Running as server by default.");
-        await StartServer();
+        StartServer();
         break;
     case serverArg:
     {
         // Start the server
-        await StartServer();
+        StartServer();
         break;
     }
     case clientArg:
@@ -55,9 +53,9 @@ switch (arg1)
 
 Console.ReadLine();
 
-async Task StartServer()
+void StartServer()
 {
     Console.WriteLine("Starting as server...");
-    var icueServer = new IcueServer();
-    await icueServer.Run();
+    var icueServer = new IcueTerminalServer();
+    icueServer.Run();
 }

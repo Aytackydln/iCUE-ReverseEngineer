@@ -1,11 +1,16 @@
-﻿using System.Text.Json;
+﻿using System.Collections.Frozen;
+using System.Text.Json;
 using iCUE_ReverseEngineer.Icue.Data;
 
 namespace iCUE_ReverseEngineer.Icue.Sdk;
 
 public class SdkHandler
 {
-    public Dictionary<string, Action<IcueGameMessage>> SdkHandles { get; }
+    private static readonly int MaxKeyId = Enum.GetValues<IcueLedId>().Cast<int>().Max() + 1;
+
+    public event EventHandler? ColorsUpdated;
+    public FrozenDictionary<string, Action<IcueGameMessage>> SdkHandles { get; }
+    public Dictionary<IcueLedId, IcueColor> LedColors { get; } = new(MaxKeyId);
 
     private readonly IcueToGameConnection _gameConnection;
 
@@ -19,8 +24,8 @@ public class SdkHandler
             { "CorsairGetDeviceCount", DeviceCount },
             { "CorsairGetDeviceInfo", DeviceInfo },
             { "CorsairGetLedPositions", LedPositions },
-            { "CorsairSetLedsColors", RespondOk },
-        };
+            { "CorsairSetLedsColors", SetLedsColors },
+        }.ToFrozenDictionary();
     }
 
     private void Handshake(IcueGameMessage message)
@@ -49,6 +54,40 @@ public class SdkHandler
     {
         var ledPositionsResponse = """{"result":""" + JsonSerializer.Serialize<IcueLed[]>(DevicesPreset.LedPositions, IcueJsonContext.Default.IcueLedArray) + "}";
         _gameConnection.SendGameMessage(ledPositionsResponse);
+    }
+    
+    private void SetLedsColors(IcueGameMessage message)
+    {
+        if (message.Params?.LedsColors == null || message.Params.LedsColors.Length == 0)
+        {
+            RespondOk(message);
+            return;
+        }
+        
+        var ledsString = message.Params.LedsColors;
+        // iterate trough LEDs, 0 alloc
+        IterateLedsColors(ledsString);
+        ColorsUpdated?.Invoke(this, EventArgs.Empty);
+
+        // Here you would handle the LED colors, for now we just respond OK
+        RespondOk(message);
+    }
+    private void IterateLedsColors(string ledsColors)
+    {
+        var span = ledsColors.AsSpan();
+        var currentLedIdx = 0;
+        while (currentLedIdx < span.Length)
+        {
+            var currentLedEndIdx = span[currentLedIdx..].IndexOf('#');
+            if (currentLedEndIdx == -1) currentLedEndIdx = span.Length - currentLedIdx;
+
+            var ledEntry = span.Slice(currentLedIdx, currentLedEndIdx);
+
+            var ledColor = LedsStringParser.ParseLedColor(ledEntry);
+            LedColors[ledColor.LedId] = ledColor.ToIcueColor();
+
+            currentLedIdx += currentLedEndIdx + 1;
+        }
     }
 
     private void RespondOk(IcueGameMessage message)

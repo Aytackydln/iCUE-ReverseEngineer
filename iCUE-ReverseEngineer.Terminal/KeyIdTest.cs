@@ -1,6 +1,6 @@
 ﻿using iCUE_ReverseEngineer.Client;
 
-namespace iCUE_ReverseEngineer;
+namespace iCUE_ReverseEngineer_Terminal;
 
 public class KeyIdTest
 {

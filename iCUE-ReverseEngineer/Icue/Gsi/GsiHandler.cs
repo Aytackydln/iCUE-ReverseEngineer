@@ -4,12 +4,15 @@ namespace iCUE_ReverseEngineer.Icue.Gsi;
 
 public sealed class GsiHandler
 {
+    public event EventHandler<string>? StateAdded;
+    public event EventHandler<string>? StateRemoved;
+    public event EventHandler<string>? EventAdded;
+    public event EventHandler? StatesCleared;
+    public event EventHandler? EventsCleared;
+
     public Dictionary<string, Action<IcueGameMessage>> GameHandles { get; }
 
     private readonly IcueToGameConnection _gameConnection;
-
-    public HashSet<string> States { get; } = [];
-    public HashSet<string> Events { get; } = [];
 
     public GsiHandler(IcueToGameConnection gameConnection)
     {
@@ -22,9 +25,9 @@ public sealed class GsiHandler
             { "CgSdkSetState", CgSdkSetState },
             { "CgSdkSetEvent", CgSdkSetEvent },
             { "CgSdkSetGame", RespondOk },
-            { "CgSdkClearState", RespondOk },
-            { "CgSdkClearAllEvents", RespondOk },
-            { "CgSdkClearAllStates", RespondOk },
+            { "CgSdkClearState", CgSdkClearState },
+            { "CgSdkClearAllEvents", CgSdkClearAllEvents },
+            { "CgSdkClearAllStates", CgSdkClearAllStates },
             { "CgSdkReleaseControl", RespondOk },
         };
     }
@@ -46,9 +49,26 @@ public sealed class GsiHandler
         var stateName = message.Params?.Name;
         if (stateName != null)
         {
-            States.Add(stateName);
+            StateAdded?.Invoke(this, stateName);
         }
 
+        RespondOk(message);
+    }
+    
+    private void CgSdkClearState(IcueGameMessage message)
+    {
+        var stateName = message.Params?.Name;
+        if (stateName != null)
+        {
+            StateRemoved?.Invoke(this, stateName);
+        }
+
+        RespondOk(message);
+    }
+    
+    private void CgSdkClearAllStates(IcueGameMessage message)
+    {
+        StatesCleared?.Invoke(this, EventArgs.Empty);
         RespondOk(message);
     }
 
@@ -57,9 +77,15 @@ public sealed class GsiHandler
         var eventName = message.Params?.Name;
         if (eventName != null)
         {
-            Events.Add(eventName);
+            EventAdded?.Invoke(this, eventName);
         }
 
+        RespondOk(message);
+    }
+    
+    private void CgSdkClearAllEvents(IcueGameMessage message)
+    {
+        EventsCleared?.Invoke(this, EventArgs.Empty);
         RespondOk(message);
     }
 

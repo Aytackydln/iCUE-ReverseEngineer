@@ -1,0 +1,30 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             Background="Transparent"
+             x:Class="iCUE_ReverseEngineer.Avalonia.SdkDisplay">
+    <Border BorderBrush="Brown" BorderThickness="2">
+        <StackPanel>
+            <TextBlock Name="SdkConnectionTitle">Game Title</TextBlock>
+            <StackPanel Name="GsiPanel" Orientation="Horizontal">
+                <Border BorderBrush="BlueViolet" BorderThickness="1" Margin="4">
+                    <StackPanel>
+                        <TextBlock>State Variables</TextBlock>
+                        <StackPanel Name="StatesList" />
+                    </StackPanel>
+                </Border>
+                <Border BorderBrush="BlueViolet" BorderThickness="1" Margin="4">
+                    <StackPanel>
+                        <TextBlock>Event Variables</TextBlock>
+                        <StackPanel Name="EventsList" />
+                    </StackPanel>
+                </Border>
+            </StackPanel>
+            <Viewbox Stretch="Uniform">
+                <Canvas Name="KeyboardPanel" Width="800" Height="300" Background="Transparent" IsVisible="False"/>
+            </Viewbox>
+        </StackPanel>
+    </Border>
+</UserControl>

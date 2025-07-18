@@ -1,6 +1,6 @@
 ﻿namespace iCUE_ReverseEngineer;
 
-public enum IcueKeyId
+public enum IcueLedId
 {
     Escape = 1,
     F1 = 2,
@@ -70,13 +70,17 @@ public enum IcueKeyId
     LeftControl = 61,
     LeftWindows = 62,
     LeftAlt = 63,
+
     // 64 unknown
     Space = 65,
+
     // 66 unknown
     // 67 unknown
     RightAlt = 68,
+
     // 69 unknown
     ContextMenu = 70,
+
     // 71 unknown
     Brightness = 72,
 
@@ -88,11 +92,14 @@ public enum IcueKeyId
     Home = 78,
     PageUp = 79,
     CloseBracket = 80,
+
     // 81 unknown
     Hashtag = 82,
     Enter = 83,
+
     // 84 unknown
     Equals = 85,
+
     // 86 unknown
     Backspace = 87,
     Delete = 88,
@@ -100,29 +107,30 @@ public enum IcueKeyId
     PageDown = 90,
     RightShift = 91,
     RightControl = 92,
-    
+
     UpArrow = 93,
     LeftArrow = 94,
     DownArrow = 95,
     RightArrow = 96,
-    
+
     WinLock = 97,
     MediaMute = 98,
     MediaStop = 99,
     MediaPrevious = 100,
     MediaPlayPause = 101,
     MediaNext = 102,
-    
+
     NumLock = 103,
     NumpadSlash = 104,
     NumpadAsterisk = 105,
     NumpadMinus = 106,
     NumpadPlus = 107,
     NumpadEnter = 108,
-    
+
     NumpadSeven = 109,
     NumpadEight = 110,
     NumpadNine = 111,
+
     // 112 unknown
     NumpadFour = 113,
     NumpadFive = 114,
@@ -132,10 +140,14 @@ public enum IcueKeyId
     NumpadThree = 118,
     NumpadZero = 119,
     NumpadPeriod = 120,
-    
+
     Fn = 147,
+
+    Headphone1 = 152,
+    Headphone2 = 153,
+
     LogoLeft = 500,
     LogoRight = 501,
-    
+
     Profile = 1543,
 }

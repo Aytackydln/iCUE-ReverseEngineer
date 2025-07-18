@@ -6,40 +6,39 @@ namespace iCUE_ReverseEngineer.Icue;
 
 public sealed class GameHandler : IDisposable
 {
+    /// <summary>
+    /// For observing. Called when a game connects to the callback pipe.
+    /// </summary>
+    public event EventHandler<string>? GamePipeConnected;
     public event EventHandler? GameDisconnected;
 
     private readonly IcueToGameConnection _gameConnection;
 
-    private readonly GsiHandler _gsiHandler;
+    public string GamePid => _gameConnection.GamePid;
+    public GsiHandler GsiHandler { get; }
+    public SdkHandler SdkHandler { get; }
     private readonly Dictionary<string, Action<IcueGameMessage>> _handles;
 
     public GameHandler(IcueToGameConnection gameConnection)
     {
         _gameConnection = gameConnection;
-        _gsiHandler = new GsiHandler(_gameConnection);
-        var sdkHandler = new SdkHandler(_gameConnection);
-        _handles = _gsiHandler.GameHandles.Concat(sdkHandler.SdkHandles)
+        GsiHandler = new GsiHandler(_gameConnection);
+        SdkHandler = new SdkHandler(_gameConnection);
+        _handles = GsiHandler.GameHandles.Concat(SdkHandler.SdkHandles)
             .ToDictionary(x => x.Key, x => x.Value);
 
+        _gameConnection.GamePipeConnected += GameConnectionOnGamePipeConnected;
         _gameConnection.GameMessageReceived += OnGameMessageReceived;
         _gameConnection.GameDisconnected += OnGameDisconnected;
     }
 
+    private void GameConnectionOnGamePipeConnected(object? sender, string e)
+    {
+        GamePipeConnected?.Invoke(this, e);
+    }
+
     private void OnGameDisconnected(object? sender, EventArgs e)
     {
-        // print states and events
-        Console.WriteLine("Received States:");
-        foreach (var state in _gsiHandler.States)
-        {
-            Console.WriteLine($"- {state}");
-        }
-
-        Console.WriteLine("Received Events:");
-        foreach (var gameEvent in _gsiHandler.Events)
-        {
-            Console.WriteLine($"- {gameEvent}");
-        }
-
         _gameConnection.Close();
         GameDisconnected?.Invoke(this, EventArgs.Empty);
     }
@@ -50,7 +49,7 @@ public sealed class GameHandler : IDisposable
         if (!_handles.TryGetValue(messageMethod, out var handle))
         {
             Console.ForegroundColor = ConsoleColor.Red;
-            Console.WriteLine($"[GameIn] unhandled message: {message.Method}");
+            Console.WriteLine($"[iCUE Replica][GameIn] unhandled message: {message.Method}");
             Console.ResetColor();
             return;
         }
