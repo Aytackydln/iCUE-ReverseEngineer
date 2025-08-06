@@ -3,13 +3,13 @@ using System.Text;
 
 namespace iCUE_ReverseEngineer.Client;
 
-public sealed class IcuePipeReader(string pipeName) : IDisposable, IAsyncDisposable
+internal sealed class IcuePipeReader(string pipeName) : IDisposable, IAsyncDisposable
 {
-    public event EventHandler<string>? MessageReceived;
+    internal event EventHandler<string>? MessageReceived;
     
     private readonly NamedPipeClientStream _pipeClient = new(".", pipeName, PipeDirection.In, PipeOptions.Asynchronous);
 
-    public async Task Start()
+    internal async Task Start()
     {
         await _pipeClient.ConnectAsync();
         Console.WriteLine(pipeName + " connected.");
@@ -40,12 +40,12 @@ public sealed class IcuePipeReader(string pipeName) : IDisposable, IAsyncDisposa
         });
     }
 
-    public void Dispose()
+    void IDisposable.Dispose()
     {
         _pipeClient.Dispose();
     }
 
-    public async ValueTask DisposeAsync()
+    async ValueTask IAsyncDisposable.DisposeAsync()
     {
         await _pipeClient.DisposeAsync();
     }

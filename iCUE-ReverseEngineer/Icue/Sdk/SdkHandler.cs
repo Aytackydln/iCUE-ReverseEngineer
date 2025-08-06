@@ -9,12 +9,12 @@ public class SdkHandler
     private static readonly int MaxKeyId = Enum.GetValues<IcueLedId>().Cast<int>().Max() + 1;
 
     public event EventHandler? ColorsUpdated;
-    public FrozenDictionary<string, Action<IcueGameMessage>> SdkHandles { get; }
+    internal FrozenDictionary<string, Action<IcueGameMessage>> SdkHandles { get; }
     public Dictionary<IcueLedId, IcueColor> LedColors { get; } = new(MaxKeyId);
 
     private readonly IcueToGameConnection _gameConnection;
 
-    public SdkHandler(IcueToGameConnection gameConnection)
+    internal SdkHandler(IcueToGameConnection gameConnection)
     {
         _gameConnection = gameConnection;
 

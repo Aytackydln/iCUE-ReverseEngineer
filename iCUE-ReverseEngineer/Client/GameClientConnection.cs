@@ -3,10 +3,10 @@ using System.Text;
 
 namespace iCUE_ReverseEngineer.Client;
 
-public class GameClientConnection
+internal class GameClientConnection
 {
-    public event EventHandler<string>? MessageReceived;
-    public event EventHandler<string>? CallbackReceived;
+    internal event EventHandler<string>? MessageReceived;
+    internal event EventHandler<string>? CallbackReceived;
     
     private readonly string _pipePrefix;
 
@@ -14,7 +14,7 @@ public class GameClientConnection
     private readonly IcuePipeReader _gameCallbackPipe;
     private NamedPipeClientStream? _gameInPipe;
 
-    public GameClientConnection(string pipePrefix)
+    internal GameClientConnection(string pipePrefix)
     {
         _pipePrefix = pipePrefix;
         
@@ -35,7 +35,7 @@ public class GameClientConnection
         CallbackReceived?.Invoke(this, e);
     }
 
-    public async Task Start()
+    internal async Task Start()
     {
         _gameInPipe = new NamedPipeClientStream(".", $"{_pipePrefix}_in", PipeDirection.Out, PipeOptions.Asynchronous);
         await _gameInPipe.ConnectAsync();
@@ -45,7 +45,7 @@ public class GameClientConnection
         await _gameCallbackPipe.Start();
     }
 
-    public async Task SendMessage(string message)
+    internal async Task SendMessage(string message)
     {
         if (_gameInPipe == null)
         {

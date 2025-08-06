@@ -3,25 +3,25 @@ using iCUE_ReverseEngineer.Util;
 
 namespace iCUE_ReverseEngineer.Icue.Data;
 
-public class IcueGameMessage
+internal class IcueGameMessage
 {
-    public string Method { get; set; } = string.Empty;
+    internal string Method { get; set; } = string.Empty;
     
-    public IcueGameMessageParams? Params { get; set; }
+    internal IcueGameMessageParams? Params { get; set; }
 }
 
-public class IcueGameMessageParams
+internal class IcueGameMessageParams
 {
-    public string? Name { get; set; }
+    internal string? Name { get; set; }
     
     // allow this to be parsed from numbers or strings
     [JsonConverter(typeof(StringOrNumberConverter))]
-    public string? GameSdkProtocolVersion { get; set; }
-    public int? DeviceIndex { get; set; }
+    internal string? GameSdkProtocolVersion { get; set; }
+    internal int? DeviceIndex { get; set; }
     
     /// <summary>
     /// # separated list of LED colors in , separated LED ID, R, G, B format.
     /// Example: "1,255,0,0#2,0,255,0#3,0,0,255"
     /// </summary>
-    public string? LedsColors { get; set; }
+    internal string? LedsColors { get; set; }
 }

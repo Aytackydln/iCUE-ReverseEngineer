@@ -3,7 +3,7 @@ using System.Text.Json.Serialization;
 
 namespace iCUE_ReverseEngineer.Util;
 
-public class StringOrNumberConverter : JsonConverter<string?>
+internal class StringOrNumberConverter : JsonConverter<string?>
 {
     public override string? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
     {
@@ -11,7 +11,7 @@ public class StringOrNumberConverter : JsonConverter<string?>
         {
             JsonTokenType.String => reader.GetString(),
             JsonTokenType.Number => reader.GetInt32().ToString(), // or reader.GetDouble().ToString()
-            _ => throw new JsonException()
+            _ => throw new JsonException("StringOrNumberConverter can only convert string or number types.")
         };
     }
 

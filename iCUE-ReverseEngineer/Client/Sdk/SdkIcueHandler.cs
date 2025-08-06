@@ -8,10 +8,10 @@ internal enum SdkConnectionState
     Initialized,
 }
 
-public class SdkIcueHandler : IIcueHandler
+internal class SdkIcueHandler : IIcueHandler
 {
     private readonly GameClientConnection _connection;
-    public List<GsiGameHandle> GameHandles { get; }
+    internal List<GsiGameHandle> GameHandles { get; }
 
     private SdkConnectionState _state = SdkConnectionState.Handshake;
     private int _currentDeviceIndex;
@@ -19,7 +19,7 @@ public class SdkIcueHandler : IIcueHandler
     
     private readonly TaskCompletionSource _started = new();
 
-    public SdkIcueHandler(GameClientConnection connection)
+    internal SdkIcueHandler(GameClientConnection connection)
     {
         _connection = connection;
         GameHandles =
@@ -38,7 +38,7 @@ public class SdkIcueHandler : IIcueHandler
         connection.CallbackReceived += GameCallbackReceived;
     }
 
-    public async Task Start()
+    async Task IIcueHandler.Start()
     {
         const string json = """{"method":"CorsiarHandshakeMethod","params":{"sdkProtocolVersion":10}}""";
         await _connection.SendMessage(json);

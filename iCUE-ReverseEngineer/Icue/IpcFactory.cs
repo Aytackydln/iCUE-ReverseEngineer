@@ -4,9 +4,9 @@ using System.Security.Principal;
 
 namespace iCUE_ReverseEngineer.Icue;
 
-public static class IpcFactory
+internal static class IpcFactory
 {
-    public static NamedPipeServerStream CreateInPipe(string pipeName)
+    internal static NamedPipeServerStream CreateInPipe(string pipeName)
     {
         var ps = new PipeSecurity();
         ps.AddAccessRule(new PipeAccessRule(WindowsIdentity.GetCurrent().User!, PipeAccessRights.FullControl, AccessControlType.Allow));
@@ -23,7 +23,7 @@ public static class IpcFactory
         );
     }
 
-    public static NamedPipeServerStream CreateOutPipe(string pipeName)
+    internal static NamedPipeServerStream CreateOutPipe(string pipeName)
     {
         var ps = new PipeSecurity();
         ps.AddAccessRule(new PipeAccessRule(WindowsIdentity.GetCurrent().User!, PipeAccessRights.FullControl, AccessControlType.Allow));

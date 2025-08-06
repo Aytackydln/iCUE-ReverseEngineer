@@ -10,6 +10,7 @@ public sealed class GameHandler : IDisposable
     /// For observing. Called when a game connects to the callback pipe.
     /// </summary>
     public event EventHandler<string>? GamePipeConnected;
+
     public event EventHandler? GameDisconnected;
 
     private readonly IcueToGameConnection _gameConnection;
@@ -19,7 +20,7 @@ public sealed class GameHandler : IDisposable
     public SdkHandler SdkHandler { get; }
     private readonly Dictionary<string, Action<IcueGameMessage>> _handles;
 
-    public GameHandler(IcueToGameConnection gameConnection)
+    internal GameHandler(IcueToGameConnection gameConnection)
     {
         _gameConnection = gameConnection;
         GsiHandler = new GsiHandler(_gameConnection);

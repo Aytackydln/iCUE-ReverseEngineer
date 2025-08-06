@@ -1,9 +1,9 @@
 ﻿namespace iCUE_ReverseEngineer.Icue.Sdk;
 
-public static class LedsStringParser
+internal static class LedsStringParser
 {
 
-    public static IcueLedColor ParseLedColor(ReadOnlySpan<char> ledEntry)
+    internal static IcueLedColor ParseLedColor(ReadOnlySpan<char> ledEntry)
     {
         var comma1Index = ledEntry.IndexOf(',');
         var comma2Index = ledEntry[(comma1Index + 1)..].IndexOf(',') + comma1Index + 1;

@@ -3,18 +3,18 @@ using System.Text;
 
 namespace iCUE_ReverseEngineer.Client;
 
-public class ClientConnectedEventArgs(string pipePrefix) : EventArgs
+internal class ClientConnectedEventArgs(string pipePrefix) : EventArgs
 {
-    public string PipePrefix { get; } = pipePrefix;
+    internal string PipePrefix { get; } = pipePrefix;
 }
 
-public class ClientToIcueConnection(
+internal class ClientToIcueConnection(
     string corsairOutPipeName,
     string corsairCallbackPipeName,
     string corsairInPipeName
 )
 {
-    public event EventHandler<ClientConnectedEventArgs>? GameConnected;
+    internal event EventHandler<ClientConnectedEventArgs>? GameConnected;
     
     private readonly NamedPipeClientStream _corsairOutListener = new(".", corsairOutPipeName, PipeDirection.In, PipeOptions.Asynchronous);
     private readonly NamedPipeClientStream _corsairCallbackListener = new(".", corsairCallbackPipeName, PipeDirection.In, PipeOptions.Asynchronous);
@@ -23,7 +23,7 @@ public class ClientToIcueConnection(
     private readonly byte[] _corsairOutBuffer = new byte[4096];
     private readonly byte[] _corsairCallbackBuffer = new byte[4096];
     
-    public async Task Start()
+    internal async Task Start()
     {
         // wait for Game Pipe prefix from Corsair Utility Engine
         await _corsairOutListener.ConnectAsync();

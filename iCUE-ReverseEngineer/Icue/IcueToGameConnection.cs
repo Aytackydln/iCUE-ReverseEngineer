@@ -5,20 +5,20 @@ using iCUE_ReverseEngineer.Icue.Data;
 
 namespace iCUE_ReverseEngineer.Icue;
 
-public sealed class IcueToGameConnection(string gamePid) : IDisposable, IAsyncDisposable
+internal sealed class IcueToGameConnection(string gamePid) : IDisposable, IAsyncDisposable
 {
-    public event EventHandler<string>? GamePipeConnected;
-    public event EventHandler<IcueGameMessage>? GameMessageReceived;
-    public event EventHandler? GameDisconnected;
+    internal event EventHandler<string>? GamePipeConnected;
+    internal event EventHandler<IcueGameMessage>? GameMessageReceived;
+    internal event EventHandler? GameDisconnected;
     
-    public string GamePid { get; } = gamePid;
+    internal string GamePid { get; } = gamePid;
 
     // GUIDs are randomly generated for each game instance, but we use a fixed one here for simplicity.
     private readonly NamedPipeServerStream _inPipe = IpcFactory.CreateInPipe($"{gamePid}\\{{4e0c98fd-e062-49d6-8f02-277ac54ead5d}}_in");
     private readonly NamedPipeServerStream _outPipe = IpcFactory.CreateOutPipe($"{gamePid}\\{{4e0c98fd-e062-49d6-8f02-277ac54ead5d}}_out");
     private readonly NamedPipeServerStream _callbackPipe = IpcFactory.CreateOutPipe($"{gamePid}\\{{4e0c98fd-e062-49d6-8f02-277ac54ead5d}}_callback");
 
-    public void Run()
+    internal void Run()
     {
         _callbackPipe.BeginWaitForConnection(LogConnection("GameCallback"), _callbackPipe);
         _inPipe.BeginWaitForConnection(GameIn, _inPipe);
@@ -30,7 +30,7 @@ public sealed class IcueToGameConnection(string gamePid) : IDisposable, IAsyncDi
         return _ => { GamePipeConnected?.Invoke(this, gameCallback); };
     }
 
-    public void SendGameMessage(string messageStr)
+    internal void SendGameMessage(string messageStr)
     {
         var message = Encoding.UTF8.GetBytes(messageStr + "\0");
         var messageLength = BitConverter.GetBytes(message.Length);
@@ -89,7 +89,7 @@ public sealed class IcueToGameConnection(string gamePid) : IDisposable, IAsyncDi
         GameDisconnected?.Invoke(this, EventArgs.Empty);
     }
 
-    public void Close()
+    internal void Close()
     {
         _inPipe.Close();
         _outPipe.Close();

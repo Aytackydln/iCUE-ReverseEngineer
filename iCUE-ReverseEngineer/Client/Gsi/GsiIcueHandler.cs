@@ -1,15 +1,15 @@
 ﻿namespace iCUE_ReverseEngineer.Client.Gsi;
 
-public class GsiIcueHandler : IIcueHandler
+internal class GsiIcueHandler : IIcueHandler
 {
     private readonly GameClientConnection _connection;
-    public List<GsiGameHandle> GameHandles { get; }
+    private List<GsiGameHandle> GameHandles { get; }
 
     private bool _stateSent;
     
     private readonly TaskCompletionSource _started = new();
 
-    public GsiIcueHandler(GameClientConnection connection)
+    internal GsiIcueHandler(GameClientConnection connection)
     {
         _connection = connection;
         GameHandles =
@@ -33,8 +33,8 @@ public class GsiIcueHandler : IIcueHandler
         connection.MessageReceived += GameOutReceived;
         connection.CallbackReceived += GameCallbackReceived;
     }
-    
-    public async Task Start()
+
+    async Task IIcueHandler.Start()
     {
         Console.WriteLine("[GsiGame] Sending handshake message to gameIn pipe...");
         const string handshakeMessage = """{"method":"CgSdkPerfromProtocolHandshake","params":{"gameSdkProtocolVersion":1}}""";
@@ -42,7 +42,7 @@ public class GsiIcueHandler : IIcueHandler
         await _started.Task;
     }
 
-    public async void GameOutReceived(object? sender, string message)
+    private async void GameOutReceived(object? sender, string message)
     {
         Console.ForegroundColor = ConsoleColor.Green;
         Console.WriteLine($"[GameOut]:\n{message}");
@@ -57,7 +57,7 @@ public class GsiIcueHandler : IIcueHandler
         await handle.DoHandle(message);
     }
 
-    public void GameCallbackReceived(object? sender, string message)
+    private void GameCallbackReceived(object? sender, string message)
     {
         Console.ForegroundColor = ConsoleColor.Green;
         Console.BackgroundColor = ConsoleColor.DarkMagenta;

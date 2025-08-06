@@ -1,12 +1,12 @@
 ﻿namespace iCUE_ReverseEngineer.Client;
 
-public interface IIcueHandler
+internal interface IIcueHandler
 {
-    public Task Start();
+    internal Task Start();
 }
 
-public class GsiGameHandle(Func<string, bool> isMatch, Func<string, Task> doHandle)
+internal class GsiGameHandle(Func<string, bool> isMatch, Func<string, Task> doHandle)
 {
-    public Func<string, bool> IsMatch { get; } = isMatch;
-    public Func<string, Task> DoHandle { get; } = doHandle;
+    internal Func<string, bool> IsMatch { get; } = isMatch;
+    internal Func<string, Task> DoHandle { get; } = doHandle;
 }

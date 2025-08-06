@@ -10,11 +10,11 @@ public sealed class GsiHandler
     public event EventHandler? StatesCleared;
     public event EventHandler? EventsCleared;
 
-    public Dictionary<string, Action<IcueGameMessage>> GameHandles { get; }
+    internal Dictionary<string, Action<IcueGameMessage>> GameHandles { get; }
 
     private readonly IcueToGameConnection _gameConnection;
 
-    public GsiHandler(IcueToGameConnection gameConnection)
+    internal GsiHandler(IcueToGameConnection gameConnection)
     {
         _gameConnection = gameConnection;
 

@@ -5,9 +5,21 @@
         <RootNamespace>iCUE_ReverseEngineer</RootNamespace>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
-        
+
         <Optimize>true</Optimize>
         <Trimmed>true</Trimmed>
+
+        <PackageId>iCUE-ReverseEngineeredServer</PackageId>
+        <Version>0.1.0</Version>
+        <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+        <Authors>Aytackydln</Authors>
+        <Description>Source generator to delegate functions to another object</Description>
+        <RepositoryUrl>https://github.com/Aytackydln/iCUE-ReverseEngineer</RepositoryUrl>
+        <PackageLicenseExpression>MIT</PackageLicenseExpression>
+        <PackageReadmeFile>README.md</PackageReadmeFile>
     </PropertyGroup>
 
+    <ItemGroup>
+        <None Include=".\README.md" Pack="true" PackagePath="\"/>
+    </ItemGroup>
 </Project>
