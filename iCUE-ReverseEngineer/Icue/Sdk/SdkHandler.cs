@@ -9,6 +9,7 @@ public class SdkHandler
     private static readonly int MaxKeyId = Enum.GetValues<IcueLedId>().Cast<int>().Max() + 1;
 
     public event EventHandler? ColorsUpdated;
+    public event EventHandler? GameConnected;
     internal FrozenDictionary<string, Action<IcueGameMessage>> SdkHandles { get; }
     public Dictionary<IcueLedId, IcueColor> LedColors { get; } = new(MaxKeyId);
 
@@ -32,6 +33,7 @@ public class SdkHandler
     {
         const string handshakeOkay = """{"serverProtocolVersion":16,"serverVersion":"5.30.90","breakingChanges":false}""";
         _gameConnection.SendGameMessage(handshakeOkay);
+        GameConnected?.Invoke(this, EventArgs.Empty);
     }
 
     private void DeviceCount(IcueGameMessage obj)
@@ -52,10 +54,11 @@ public class SdkHandler
 
     private void LedPositions(IcueGameMessage obj)
     {
-        var ledPositionsResponse = """{"result":""" + JsonSerializer.Serialize<IcueLed[]>(DevicesPreset.LedPositions, IcueJsonContext.Default.IcueLedArray) + "}";
+        var ledPositionsResponse = """{"result":""" + JsonSerializer.Serialize<IcueLed[]>(DevicesPreset.LedPositions, IcueJsonContext.Default.IcueLedArray) +
+                                   "}";
         _gameConnection.SendGameMessage(ledPositionsResponse);
     }
-    
+
     private void SetLedsColors(IcueGameMessage message)
     {
         if (message.Params?.LedsColors == null || message.Params.LedsColors.Length == 0)
@@ -63,7 +66,7 @@ public class SdkHandler
             RespondOk(message);
             return;
         }
-        
+
         var ledsString = message.Params.LedsColors;
         // iterate trough LEDs, 0 alloc
         IterateLedsColors(ledsString);
@@ -72,6 +75,7 @@ public class SdkHandler
         // Here you would handle the LED colors, for now we just respond OK
         RespondOk(message);
     }
+
     private void IterateLedsColors(string ledsColors)
     {
         var span = ledsColors.AsSpan();

@@ -4,18 +4,23 @@ using iCUE_ReverseEngineer.Icue.Sdk;
 
 namespace iCUE_ReverseEngineer.Icue;
 
+public sealed class IcueGameConnectedEventArgs(long gamePid) : EventArgs
+{
+    public long GamePid { get; } = gamePid;
+}
+
 public sealed class GameHandler : IDisposable
 {
     /// <summary>
     /// For observing. Called when a game connects to the callback pipe.
     /// </summary>
-    public event EventHandler<string>? GamePipeConnected;
+    public event EventHandler<IcueGameConnectedEventArgs>? GamePipeConnected;
 
     public event EventHandler? GameDisconnected;
 
     private readonly IcueToGameConnection _gameConnection;
 
-    public string GamePid => _gameConnection.GamePid;
+    public long GamePid => _gameConnection.GamePid;
     public GsiHandler GsiHandler { get; }
     public SdkHandler SdkHandler { get; }
     private readonly Dictionary<string, Action<IcueGameMessage>> _handles;
@@ -35,7 +40,8 @@ public sealed class GameHandler : IDisposable
 
     private void GameConnectionOnGamePipeConnected(object? sender, string e)
     {
-        GamePipeConnected?.Invoke(this, e);
+        GamePipeConnected?.Invoke(this, new IcueGameConnectedEventArgs(_gameConnection.GamePid));
+        _gameConnection.Run();
     }
 
     private void OnGameDisconnected(object? sender, EventArgs e)

@@ -7,6 +7,7 @@ using Avalonia.Controls;
 using Avalonia.Media;
 using Avalonia.Threading;
 using iCUE_ReverseEngineer.Icue;
+using iCUE_ReverseEngineer.Icue.Gsi;
 using iCUE_ReverseEngineer.Icue.Sdk;
 using JetBrains.Annotations;
 
@@ -118,16 +119,16 @@ public partial class SdkDisplay : UserControl
         });
     }
 
-    private void GsiHandlerOnStateAdded(object? sender, string stateName)
+    private void GsiHandlerOnStateAdded(object? sender, IcueStateEventArgs icueStateEventArgs)
     {
-        _states[stateName] = true;
+        _states[icueStateEventArgs.StateName] = true;
 
         UpdateStates();
     }
 
-    private void GsiHandlerOnStateRemoved(object? sender, string stateName)
+    private void GsiHandlerOnStateRemoved(object? sender, IcueStateEventArgs icueStateEventArgs)
     {
-        _states[stateName] = false;
+        _states[icueStateEventArgs.StateName] = false;
 
         UpdateStates();
     }
@@ -142,9 +143,9 @@ public partial class SdkDisplay : UserControl
         UpdateStates();
     }
 
-    private void GsiHandlerOnEventAdded(object? sender, string e)
+    private void GsiHandlerOnEventAdded(object? sender, IcueStateEventArgs icueStateEventArgs)
     {
-        _events.Add(e);
+        _events.Add(icueStateEventArgs.StateName);
         UpdateEvents();
     }
 

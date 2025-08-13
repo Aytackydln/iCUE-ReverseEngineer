@@ -1,11 +1,11 @@
 ﻿using iCUE_ReverseEngineer.Icue;
+using iCUE_ReverseEngineer.Icue.Gsi;
 
 namespace iCUE_ReverseEngineer_Terminal;
 
 public class IcueTerminalServer
 {
     private readonly IcueServer _icueServer = new();
-    
     
     private HashSet<string> States { get; } = [];
     private HashSet<string> Events { get; } = [];
@@ -39,33 +39,39 @@ public class IcueTerminalServer
         handler.GamePipeConnected += HandlerOnGamePipeConnected;
         handler.GsiHandler.StateAdded += GsiHandlerOnStateAdded;
         handler.GsiHandler.EventAdded += GsiHandlerOnEventAdded;
-        handler.SdkHandler.ColorsUpdated += SdkHandlerOnColorsUpdated; 
+        handler.SdkHandler.ColorsUpdated += SdkHandlerOnColorsUpdated;
+        handler.SdkHandler.GameConnected += SdkHandlerOnGameConnected;
     }
 
-    private static void HandlerOnGamePipeConnected(object? sender, string pipeName)
+    private static void HandlerOnGamePipeConnected(object? sender, IcueGameConnectedEventArgs icueGameConnected)
     {
-        Console.WriteLine(pipeName + " connection");
+        Console.WriteLine(icueGameConnected.GamePid + " connection");
     }
 
-    private void GsiHandlerOnStateAdded(object? sender, string e)
+    private void GsiHandlerOnStateAdded(object? sender, IcueStateEventArgs icueStateEventArgs)
     {
-        if(States.Add(e))
+        if(States.Add(icueStateEventArgs.StateName))
         {
-            Console.WriteLine($"State added: {e}");
+            Console.WriteLine($"State added: {icueStateEventArgs.StateName}");
         }
     }
 
-    private void GsiHandlerOnEventAdded(object? sender, string e)
+    private void GsiHandlerOnEventAdded(object? sender, IcueStateEventArgs icueStateEventArgs)
     {
-        if(Events.Add(e))
+        if(Events.Add(icueStateEventArgs.StateName))
         {
-            Console.WriteLine($"Event added: {e}");
+            Console.WriteLine($"Event added: {icueStateEventArgs.StateName}");
         }
     }
 
     private static void SdkHandlerOnColorsUpdated(object? sender, EventArgs e)
     {
         Console.WriteLine("Received colors update from SDK handler.");
+    }
+
+    private static void SdkHandlerOnGameConnected(object? sender, EventArgs e)
+    {
+        Console.WriteLine("SDK connection");
     }
 
     private void IcueServerOnGameDisconnected(object? sender, GameHandler handler)

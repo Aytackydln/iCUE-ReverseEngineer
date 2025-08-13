@@ -2,11 +2,16 @@
 
 namespace iCUE_ReverseEngineer.Icue.Gsi;
 
+public sealed class IcueStateEventArgs(string stateName) : EventArgs
+{
+    public string StateName { get; } = stateName;
+}
+
 public sealed class GsiHandler
 {
-    public event EventHandler<string>? StateAdded;
-    public event EventHandler<string>? StateRemoved;
-    public event EventHandler<string>? EventAdded;
+    public event EventHandler<IcueStateEventArgs>? StateAdded;
+    public event EventHandler<IcueStateEventArgs>? StateRemoved;
+    public event EventHandler<IcueStateEventArgs>? EventAdded;
     public event EventHandler? StatesCleared;
     public event EventHandler? EventsCleared;
 
@@ -49,7 +54,7 @@ public sealed class GsiHandler
         var stateName = message.Params?.Name;
         if (stateName != null)
         {
-            StateAdded?.Invoke(this, stateName);
+            StateAdded?.Invoke(this, new IcueStateEventArgs(stateName));
         }
 
         RespondOk(message);
@@ -60,7 +65,7 @@ public sealed class GsiHandler
         var stateName = message.Params?.Name;
         if (stateName != null)
         {
-            StateRemoved?.Invoke(this, stateName);
+            StateRemoved?.Invoke(this, new IcueStateEventArgs(stateName));
         }
 
         RespondOk(message);
@@ -77,7 +82,7 @@ public sealed class GsiHandler
         var eventName = message.Params?.Name;
         if (eventName != null)
         {
-            EventAdded?.Invoke(this, eventName);
+            EventAdded?.Invoke(this, new IcueStateEventArgs(eventName));
         }
 
         RespondOk(message);

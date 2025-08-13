@@ -61,16 +61,17 @@ public sealed class IcueServer : IDisposable, IAsyncDisposable
         }
 
         var msgLen = BitConverter.ToInt32(buffer, 0);
-        var gamePid = Encoding.UTF8.GetString(buffer, 4, msgLen).Trim('\0');
+        // gamePid like :pid:71908
+        var gamePidString = Encoding.UTF8.GetString(buffer, 4, msgLen).Trim('\0');
 
-        var gameConnection = new IcueToGameConnection(gamePid);
+        var gameConnection = new IcueToGameConnection(gamePidString);
         var gameHandler = new GameHandler(gameConnection);
         gameHandler.GameDisconnected += HandleGameDisconnected;
         _games.Add(gameHandler);
         gameConnection.Run();
         GameConnected?.Invoke(this, gameHandler);
 
-        var pipeNameMessage = $@"\\.\pipe\{gamePid}\{{4e0c98fd-e062-49d6-8f02-277ac54ead5d}}";
+        var pipeNameMessage = $@"\\.\pipe\{gamePidString}\{{4e0c98fd-e062-49d6-8f02-277ac54ead5d}}";
         SendUtilityOut(pipeNameMessage);
 
         // Restart the wait for connection on the input pipe
