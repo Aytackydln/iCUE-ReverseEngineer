@@ -10,10 +10,10 @@
         <Trimmed>true</Trimmed>
 
         <PackageId>iCUE-ReverseEngineeredServer</PackageId>
-        <Version>0.2.0</Version>
+        <Version>0.2.3</Version>
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
         <Authors>Aytackydln</Authors>
-        <Description>Source generator to delegate functions to another object</Description>
+        <Description>Replicates iCUE's SDK server</Description>
         <RepositoryUrl>https://github.com/Aytackydln/iCUE-ReverseEngineer</RepositoryUrl>
         <PackageLicenseExpression>MIT</PackageLicenseExpression>
         <PackageReadmeFile>README.md</PackageReadmeFile>

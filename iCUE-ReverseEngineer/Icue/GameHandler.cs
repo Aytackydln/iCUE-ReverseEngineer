@@ -14,7 +14,7 @@ public sealed class GameHandler : IDisposable
     /// <summary>
     /// For observing. Called when a game connects to the callback pipe.
     /// </summary>
-    public event EventHandler<IcueGameConnectedEventArgs>? GamePipeConnected;
+    public event EventHandler<string>? GamePipeConnected;
 
     public event EventHandler? GameDisconnected;
 
@@ -40,8 +40,7 @@ public sealed class GameHandler : IDisposable
 
     private void GameConnectionOnGamePipeConnected(object? sender, string e)
     {
-        GamePipeConnected?.Invoke(this, new IcueGameConnectedEventArgs(_gameConnection.GamePid));
-        _gameConnection.Run();
+        GamePipeConnected?.Invoke(this, e);
     }
 
     private void OnGameDisconnected(object? sender, EventArgs e)

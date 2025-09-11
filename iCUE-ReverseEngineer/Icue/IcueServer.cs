@@ -47,6 +47,10 @@ public sealed class IcueServer : IDisposable, IAsyncDisposable
     private void UtilityIn(IAsyncResult ar)
     {
         var pipe = (NamedPipeServerStream)ar.AsyncState!;
+        if (!pipe.IsConnected)
+        {
+            return;
+        }
 
         var buffer = new byte[4096];
         var bytesRead = pipe.Read(buffer);
@@ -55,7 +59,6 @@ public sealed class IcueServer : IDisposable, IAsyncDisposable
             _ = Task.Run(() =>
             {
                 pipe.Disconnect();
-                pipe.BeginWaitForConnection(UtilityIn, pipe);
             });
             return;
         }

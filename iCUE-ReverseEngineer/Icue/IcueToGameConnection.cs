@@ -116,7 +116,11 @@ internal sealed class IcueToGameConnection(string gamePid) : IDisposable, IAsync
      */
     private static long ParseGamePid(string gamePid)
     {
-        if (string.IsNullOrEmpty(gamePid) || !gamePid.StartsWith(":pid:"))
+        if (string.IsNullOrEmpty(gamePid))
+        {
+            return -1;
+        }
+        if (!gamePid.StartsWith(":pid:"))
         {
             throw new ArgumentException("Invalid game PID format.", nameof(gamePid));
         }

@@ -43,9 +43,9 @@ public class IcueTerminalServer
         handler.SdkHandler.GameConnected += SdkHandlerOnGameConnected;
     }
 
-    private static void HandlerOnGamePipeConnected(object? sender, IcueGameConnectedEventArgs icueGameConnected)
+    private static void HandlerOnGamePipeConnected(object? sender, string s)
     {
-        Console.WriteLine(icueGameConnected.GamePid + " connection");
+        Console.WriteLine(s + " connection");
     }
 
     private void GsiHandlerOnStateAdded(object? sender, IcueStateEventArgs icueStateEventArgs)
