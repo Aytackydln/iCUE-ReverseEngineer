@@ -4,9 +4,9 @@ using iCUE_ReverseEngineer.Icue.Sdk;
 
 namespace iCUE_ReverseEngineer.Icue;
 
-public sealed class IcueGameConnectedEventArgs(long gamePid) : EventArgs
+public sealed class IcueGameConnectedEventArgs(int gamePid) : EventArgs
 {
-    public long GamePid { get; } = gamePid;
+    public int GamePid { get; } = gamePid;
 }
 
 public sealed class GameHandler : IDisposable
@@ -20,7 +20,7 @@ public sealed class GameHandler : IDisposable
 
     private readonly IcueToGameConnection _gameConnection;
 
-    public long GamePid => _gameConnection.GamePid;
+    public int GamePid => _gameConnection.GamePid;
     public GsiHandler GsiHandler { get; }
     public SdkHandler SdkHandler { get; }
     private readonly Dictionary<string, Action<IcueGameMessage>> _handles;

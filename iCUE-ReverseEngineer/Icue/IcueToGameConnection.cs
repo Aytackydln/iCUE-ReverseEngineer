@@ -11,7 +11,7 @@ internal sealed class IcueToGameConnection(string gamePid) : IDisposable, IAsync
     internal event EventHandler<IcueGameMessage>? GameMessageReceived;
     internal event EventHandler? GameDisconnected;
 
-    internal long GamePid { get; } = ParseGamePid(gamePid);
+    internal int GamePid { get; } = ParseGamePid(gamePid);
 
     // GUIDs are randomly generated for each game instance, but we use a fixed one here for simplicity.
     private readonly NamedPipeServerStream _inPipe = IpcFactory.CreateInPipe($"{gamePid}\\{{4e0c98fd-e062-49d6-8f02-277ac54ead5d}}_in");
@@ -114,7 +114,7 @@ internal sealed class IcueToGameConnection(string gamePid) : IDisposable, IAsync
      * Parses the game PID from gamePid string.
      * param gamePid: The game PID string, expected to be in the format ":pid:12345".
      */
-    private static long ParseGamePid(string gamePid)
+    private static int ParseGamePid(string gamePid)
     {
         if (string.IsNullOrEmpty(gamePid))
         {
@@ -126,7 +126,7 @@ internal sealed class IcueToGameConnection(string gamePid) : IDisposable, IAsync
         }
 
         var pidString = gamePid.Substring(5); // Skip ":pid:"
-        if (!long.TryParse(pidString, out var pid))
+        if (!int.TryParse(pidString, out var pid))
         {
             throw new FormatException("Game PID is not a valid number.");
         }

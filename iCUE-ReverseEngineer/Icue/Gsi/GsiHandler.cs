@@ -2,6 +2,11 @@
 
 namespace iCUE_ReverseEngineer.Icue.Gsi;
 
+public sealed class IcueGsiConnectionEventArgs(string gameName) : EventArgs
+{
+    public string GameName { get; } = gameName;
+}
+
 public sealed class IcueStateEventArgs(string stateName) : EventArgs
 {
     public string StateName { get; } = stateName;
@@ -9,6 +14,7 @@ public sealed class IcueStateEventArgs(string stateName) : EventArgs
 
 public sealed class GsiHandler
 {
+    public event EventHandler<IcueGsiConnectionEventArgs>? GameConnected;
     public event EventHandler<IcueStateEventArgs>? StateAdded;
     public event EventHandler<IcueStateEventArgs>? StateRemoved;
     public event EventHandler<IcueStateEventArgs>? EventAdded;
@@ -29,7 +35,7 @@ public sealed class GsiHandler
             { "CgSdkRequestControl", RequestControl },
             { "CgSdkSetState", CgSdkSetState },
             { "CgSdkSetEvent", CgSdkSetEvent },
-            { "CgSdkSetGame", RespondOk },
+            { "CgSdkSetGame", CgSetGame },
             { "CgSdkClearState", CgSdkClearState },
             { "CgSdkClearAllEvents", CgSdkClearAllEvents },
             { "CgSdkClearAllStates", CgSdkClearAllStates },
@@ -83,6 +89,17 @@ public sealed class GsiHandler
         if (eventName != null)
         {
             EventAdded?.Invoke(this, new IcueStateEventArgs(eventName));
+        }
+
+        RespondOk(message);
+    }
+
+    private void CgSetGame(IcueGameMessage message)
+    {
+        var gameName = message.Params?.Name;
+        if (gameName != null)
+        {
+            GameConnected?.Invoke(this, new IcueGsiConnectionEventArgs(gameName));
         }
 
         RespondOk(message);
