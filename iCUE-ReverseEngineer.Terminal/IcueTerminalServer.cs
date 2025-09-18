@@ -76,6 +76,7 @@ public class IcueTerminalServer
 
     private void IcueServerOnGameDisconnected(object? sender, GameHandler handler)
     {
+        Console.WriteLine("Game has disconnected");
         var gsiHandler = handler.GsiHandler;
         handler.GamePipeConnected -= HandlerOnGamePipeConnected;
         handler.SdkHandler.ColorsUpdated -= SdkHandlerOnColorsUpdated;

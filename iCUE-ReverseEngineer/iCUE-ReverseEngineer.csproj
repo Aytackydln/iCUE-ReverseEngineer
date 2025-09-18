@@ -10,7 +10,7 @@
         <Trimmed>true</Trimmed>
 
         <PackageId>iCUE-ReverseEngineeredServer</PackageId>
-        <Version>0.2.5</Version>
+        <Version>0.2.6</Version>
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
         <Authors>Aytackydln</Authors>
         <Description>Replicates iCUE's SDK server</Description>

@@ -92,6 +92,7 @@ public sealed class IcueServer : IDisposable, IAsyncDisposable
 
         _utilityOut.BeginWaitForConnection(UtilityOut, _utilityOut);
         _utilityCallback.BeginWaitForConnection(UtilityCallback, _utilityCallback);
+        _utilityInPipe.BeginWaitForConnection(UtilityIn, _utilityInPipe);
     }
 
     private void HandleGameDisconnected(object? sender, EventArgs e)
