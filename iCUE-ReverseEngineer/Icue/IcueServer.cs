@@ -104,13 +104,20 @@ public sealed class IcueServer : IDisposable, IAsyncDisposable
         RestartGameWait();
     }
 
-    void SendUtilityOut(string message)
+    private void SendUtilityOut(string message)
     {
         var msgBytes = Encoding.UTF8.GetBytes(message + "\0"); // null-terminated
         var lengthPrefix = BitConverter.GetBytes(msgBytes.Length);
-        _utilityOut.Write(lengthPrefix, 0, lengthPrefix.Length);
-        _utilityOut.Write(msgBytes, 0, msgBytes.Length);
-        _utilityOut.Flush();
+        try
+        {
+            _utilityOut.Write(lengthPrefix, 0, lengthPrefix.Length);
+            _utilityOut.Write(msgBytes, 0, msgBytes.Length);
+            _utilityOut.Flush();
+        }
+        catch (InvalidOperationException)
+        {
+            // Pipe is not connected, ignore
+        }
     }
 
     public void Dispose()

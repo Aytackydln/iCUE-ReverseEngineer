@@ -4,35 +4,7 @@ namespace iCUE_ReverseEngineer.Icue.Sdk;
 
 public static class DevicesPreset
 {
-    public static IcueDevice Keyboard { get; } = new()
-    {
-        Type = 2,
-        LedsCount = 117,
-        LogicalLayout = 4,
-        PhysicalLayout = 2,
-        Model = "K70 RGB PRO",
-        DeviceId = "2fe9dna9460s96l7c6ad4dc8v8a0f3da",
-        CapsMask = 1
-    };
-
-    public static IcueDevice Headset { get; } = new()
-    {
-        Type = 3,
-        LedsCount = 2, // originally 1, trying 2 to match Chroma and Lightsync behavior
-        LogicalLayout = 0,
-        PhysicalLayout = 0,
-        Model = "HS80",
-        DeviceId = "a8944cbe2j5029a574bbs71h1eea4bf1",
-        CapsMask = 3
-    };
-    
-    public static IcueDevice[] Devices { get; } =
-    [
-        Keyboard,
-        Headset
-    ];
-
-    public static IcueLed[] LedPositions { get; } =
+    public static IcueLed[] KeyboardLedPositions { get; } =
     [
         new() { LedId = 46, Width = 13, Top = 68.3, Left = 137.9, Height = 13 },
         new() { LedId = 47, Width = 13, Top = 68.3, Left = 147.8, Height = 13 },
@@ -151,5 +123,46 @@ public static class DevicesPreset
         new() { LedId = 147, Width = 13, Top = 88.1, Left = 153.9, Height = 13 },
         new() { LedId = 501, Width = 13, Top = 21.4, Left = 149.3, Height = 13 },
         new() { LedId = 500, Width = 13, Top = 21.4, Left = 145.7, Height = 13 }
+    ];
+
+    public static IcueLed[] HeadsetLedPositions { get; } =
+    [
+        new() { LedId = 152, Width = 20, Top = 20, Left = 20, Height = 20 },
+        // originally 1 LED, trying 2 to match Chroma and Lightsync behavior
+        new() { LedId = 153, Width = 20, Top = 20, Left = 36, Height = 20 },
+    ];
+
+    public static IcueLed[][] LedPositionsByDevice { get; } =
+    [
+        KeyboardLedPositions,
+        HeadsetLedPositions,
+    ];
+
+    private static IcueDevice Keyboard { get; } = new()
+    {
+        Type = 2,
+        LedsCount = KeyboardLedPositions.Length,
+        LogicalLayout = 4,
+        PhysicalLayout = 2,
+        Model = "K70 RGB PRO",
+        DeviceId = "2fe9dna9460s96l7c6ad4dc8v8a0f3da",
+        CapsMask = 1
+    };
+
+    private static IcueDevice Headset { get; } = new()
+    {
+        Type = 3,
+        LedsCount = HeadsetLedPositions.Length,
+        LogicalLayout = 0,
+        PhysicalLayout = 0,
+        Model = "HS80",
+        DeviceId = "a8944cbe2j5029a574bbs71h1eea4bf1",
+        CapsMask = 3
+    };
+
+    public static IcueDevice[] Devices { get; } =
+    [
+        Keyboard,
+        Headset,
     ];
 }

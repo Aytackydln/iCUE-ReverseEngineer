@@ -4,11 +4,6 @@ using iCUE_ReverseEngineer.Icue.Sdk;
 
 namespace iCUE_ReverseEngineer.Icue;
 
-public sealed class IcueGameConnectedEventArgs(int gamePid) : EventArgs
-{
-    public int GamePid { get; } = gamePid;
-}
-
 public sealed class GameHandler : IDisposable
 {
     /// <summary>

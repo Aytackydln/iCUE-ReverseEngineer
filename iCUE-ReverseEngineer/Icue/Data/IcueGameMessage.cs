@@ -24,4 +24,18 @@ internal class IcueGameMessageParams
     /// Example: "1,255,0,0#2,0,255,0#3,0,0,255"
     /// </summary>
     public string? LedsColors { get; set; }
+    
+    [JsonPropertyName("ledsColorsByDeviceIndex")]
+    public ColorsByDeviceIndex[]? LedsColorsByDeviceIndex { get; set; }
+}
+
+internal class ColorsByDeviceIndex
+{
+    public int DeviceIndex { get; set; }
+    
+    /// <summary>
+    /// # separated list of LED colors in , separated LED ID, R, G, B format.
+    /// Example: "1,255,0,0#2,0,255,0#3,0,0,255"
+    /// </summary>
+    public string LedColors { get; set; } = string.Empty;
 }

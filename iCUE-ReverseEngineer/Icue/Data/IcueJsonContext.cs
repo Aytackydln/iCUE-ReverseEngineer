@@ -4,6 +4,7 @@ namespace iCUE_ReverseEngineer.Icue.Data;
 
 [JsonSerializable(typeof(IcueGameMessage))]
 [JsonSerializable(typeof(IcueGameMessageParams))]
+[JsonSerializable(typeof(ColorsByDeviceIndex))]
 [JsonSerializable(typeof(IcueDevice))]
 [JsonSerializable(typeof(IcueLed[]))]
 [JsonSourceGenerationOptions(PropertyNamingPolicy = JsonKnownNamingPolicy.CamelCase, WriteIndented = false)]

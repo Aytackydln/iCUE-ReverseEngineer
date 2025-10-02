@@ -26,10 +26,10 @@ internal class SdkIcueHandler : IIcueHandler
         [
             new GsiGameHandle(
                 isMatch: message => message.Contains("\"breakingChanges\":false"),
-                doHandle: AskDeviceCount
+                doHandle: AcquireAccessMode
             ),
             new GsiGameHandle(
-                isMatch: message => message.StartsWith("{\"result\":"),
+                isMatch: message => message.Contains("\"result\":"),
                 doHandle: ReceiveResult
             ),
         ];
@@ -40,7 +40,7 @@ internal class SdkIcueHandler : IIcueHandler
 
     async Task IIcueHandler.Start()
     {
-        const string json = """{"method":"CorsiarHandshakeMethod","params":{"sdkProtocolVersion":10}}""";
+        const string json = """{"method":"CorsiarHandshakeMethod","params":{"sdkProtocolVersion":9}}""";
         await _connection.SendMessage(json);
         await _started.Task;
     }
@@ -69,17 +69,9 @@ internal class SdkIcueHandler : IIcueHandler
         Console.ResetColor();
     }
 
-    private async Task AskDeviceCount(string message)
+    private async Task AcquireAccessMode(string message)
     {
-        if (_state != SdkConnectionState.Handshake)
-        {
-            Console.WriteLine("[SdkIcueHandler] AskDeviceCount called in wrong state.");
-            return;
-        }
-
-        _state = SdkConnectionState.DeviceCount;
-
-        const string json = """{"method":"CorsairGetDeviceCount"}""";
+        const string json = """{"method":"CorsairSetLayerPriority","params":{"mode":0}}""";
         await _connection.SendMessage(json);
     }
 
@@ -87,6 +79,20 @@ internal class SdkIcueHandler : IIcueHandler
     {
         switch (_state)
         {
+            case SdkConnectionState.Handshake:
+                // Handshake response received, now ask for device count
+                if (_state != SdkConnectionState.Handshake)
+                {
+                    Console.WriteLine("[SdkIcueHandler] AskDeviceCount called in wrong state.");
+                    return;
+                }
+
+                _state = SdkConnectionState.DeviceCount;
+
+                const string json = """{"method":"CorsairGetDeviceCount"}""";
+                await _connection.SendMessage(json);
+
+                break;
             case SdkConnectionState.DeviceCount:
                 _state = SdkConnectionState.DeviceInfo;
 

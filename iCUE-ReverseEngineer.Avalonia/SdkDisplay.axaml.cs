@@ -28,8 +28,8 @@ public partial class SdkDisplay : UserControl
         InitializeComponent();
 
         _keyboardLeds = GenerateKeyboard();
-        var keyboardWidth = DevicesPreset.LedPositions.Select(l => l.Left + l.Width).Max();
-        var keyboardHeight = DevicesPreset.LedPositions.Select(l => l.Top + l.Height).Max();
+        var keyboardWidth = DevicesPreset.KeyboardLedPositions.Select(l => l.Left + l.Width).Max();
+        var keyboardHeight = DevicesPreset.KeyboardLedPositions.Select(l => l.Top + l.Height).Max();
         KeyboardPanel.Width = keyboardWidth;
         KeyboardPanel.Height = keyboardHeight;
     }
@@ -41,8 +41,8 @@ public partial class SdkDisplay : UserControl
         InitializeComponent();
 
         _keyboardLeds = GenerateKeyboard();
-        var keyboardWidth = DevicesPreset.LedPositions.Select(l => l.Left + l.Width).Max();
-        var keyboardHeight = DevicesPreset.LedPositions.Select(l => l.Top + l.Height).Max();
+        var keyboardWidth = DevicesPreset.KeyboardLedPositions.Select(l => l.Left + l.Width).Max();
+        var keyboardHeight = DevicesPreset.KeyboardLedPositions.Select(l => l.Top + l.Height).Max();
         KeyboardPanel.Width = keyboardWidth;
         KeyboardPanel.Height = keyboardHeight;
 
@@ -62,7 +62,7 @@ public partial class SdkDisplay : UserControl
 
     private FrozenDictionary<IcueLedId, Border> GenerateKeyboard()
     {
-        var leds = DevicesPreset.LedPositions;
+        var leds = DevicesPreset.KeyboardLedPositions;
         var dictionary = new Dictionary<IcueLedId, Border>();
 
         // clear color boxes to Panel

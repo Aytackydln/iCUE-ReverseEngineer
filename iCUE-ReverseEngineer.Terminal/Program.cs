@@ -3,6 +3,7 @@ using iCUE_ReverseEngineer.Client;
 
 const string clientArg = "--client";
 const string sdkArg = "--sdk";
+const string oldSdkArg = "--oldSdk";
 const string serverArg = "--server";
 const string keyIdTestArg = "--keyIdTest";
 
@@ -35,6 +36,14 @@ switch (arg1)
         // Start the SDK client
         Console.WriteLine("Starting as SDK client...");
         var gameClient = new GsiClient(ClientType.Sdk);
+        await gameClient.Run();
+        break;
+    }
+    case oldSdkArg:
+    {
+        // Start the Old SDK client
+        Console.WriteLine("Starting as Old SDK client...");
+        var gameClient = new GsiClient(ClientType.OldSdk);
         await gameClient.Run();
         break;
     }

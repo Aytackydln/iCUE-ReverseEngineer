@@ -8,6 +8,7 @@ public enum ClientType
 {
     Gsi,
     Sdk,
+    OldSdk,
 }
 
 public sealed partial class GsiClient(ClientType clientType)
@@ -42,6 +43,7 @@ public sealed partial class GsiClient(ClientType clientType)
             {
                 ClientType.Gsi => new GsiIcueHandler(_gameClientConnection),
                 ClientType.Sdk => new SdkIcueHandler(_gameClientConnection),
+                ClientType.OldSdk => new OldSdkIcueHandler(_gameClientConnection),
                 _ => throw new ArgumentOutOfRangeException(nameof(clientType), clientType, null)
             };
             await _gameClientConnection.Start();

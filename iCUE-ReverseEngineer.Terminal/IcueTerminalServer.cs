@@ -6,7 +6,7 @@ namespace iCUE_ReverseEngineer_Terminal;
 public class IcueTerminalServer
 {
     private readonly IcueServer _icueServer = new();
-    
+
     private HashSet<string> States { get; } = [];
     private HashSet<string> Events { get; } = [];
 

@@ -1,4 +1,5 @@
-﻿using System.IO.Pipes;
+﻿using System.Diagnostics;
+using System.IO.Pipes;
 using System.Text;
 using System.Text.Json;
 using iCUE_ReverseEngineer.Icue.Data;
@@ -34,6 +35,8 @@ internal sealed class IcueToGameConnection(string gamePid) : IDisposable, IAsync
     {
         var message = Encoding.UTF8.GetBytes(messageStr + "\0");
         var messageLength = BitConverter.GetBytes(message.Length);
+        
+        LogOutput(messageStr);
 
         _outPipe.Write(messageLength);
         _outPipe.Write(message, 0, message.Length);
@@ -68,6 +71,7 @@ internal sealed class IcueToGameConnection(string gamePid) : IDisposable, IAsync
 
             // Decode and clean message
             var jsonRaw = Encoding.UTF8.GetString(buffer, 0, length).Trim('\0');
+            LogInput(jsonRaw);
 
             try
             {
@@ -87,6 +91,22 @@ internal sealed class IcueToGameConnection(string gamePid) : IDisposable, IAsync
 
         // Notify that the game has disconnected
         GameDisconnected?.Invoke(this, EventArgs.Empty);
+    }
+
+    [Conditional("DEBUG")]
+    private static void LogInput(string content)
+    {
+        Console.ForegroundColor = ConsoleColor.Yellow;
+        Console.WriteLine($"[iCUE Replica][GameIn] {content}");
+        Console.ResetColor();
+    }
+
+    [Conditional("DEBUG")]
+    private static void LogOutput(string content)
+    {
+        Console.ForegroundColor = ConsoleColor.Green;
+        Console.WriteLine($"[iCUE Replica][GameOut] {content}");
+        Console.ResetColor();
     }
 
     internal void Close()

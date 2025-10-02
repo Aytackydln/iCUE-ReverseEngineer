@@ -21,11 +21,20 @@ public class SdkHandler
 
         SdkHandles = new Dictionary<string, Action<IcueGameMessage>>
         {
+            // old SDK methods
+            { "InternalAquireAccessMode" , RespondOk},
+            { "CorsiarReleaseControlMethod", RespondOk },
+            { "CorsairSetLayerPriority", RespondOk },
+            { "CorsairSubscribeForEventsMethod", RespondOk },
+            
+            // new SDK methods
             { "CorsiarHandshakeMethod", Handshake },
             { "CorsairGetDeviceCount", DeviceCount },
             { "CorsairGetDeviceInfo", DeviceInfo },
             { "CorsairGetLedPositions", LedPositions },
+            { "CorsairGetLedPositionsByDeviceIndex" , LedPositionsByDeviceIndex},
             { "CorsairSetLedsColors", SetLedsColors },
+            { "CorsairSetLedsColorsFlushBuffer", SetLedsColorsFlushBuffer },
         }.ToFrozenDictionary();
     }
 
@@ -54,8 +63,28 @@ public class SdkHandler
 
     private void LedPositions(IcueGameMessage obj)
     {
-        var ledPositionsResponse = """{"result":""" + JsonSerializer.Serialize<IcueLed[]>(DevicesPreset.LedPositions, IcueJsonContext.Default.IcueLedArray) +
-                                   "}";
+        var ledPositionsJson = JsonSerializer.Serialize<IcueLed[]>(DevicesPreset.KeyboardLedPositions, IcueJsonContext.Default.IcueLedArray);
+        var ledPositionsResponse = $$"""{"result":{{ledPositionsJson}}}""";
+        _gameConnection.SendGameMessage(ledPositionsResponse);
+    }
+    
+    private void LedPositionsByDeviceIndex(IcueGameMessage message)
+    {
+        var deviceIndex = message.Params?.DeviceIndex ?? 0;
+        var deviceInfo = DevicesPreset.Devices[deviceIndex];
+        
+        // dunno why, but iCUE returns errorCode 5 if PhysicalLayout is 0
+        if (deviceInfo.PhysicalLayout == 0)
+        {
+            const string errorResponse = """{"errorCode":5}""";
+            _gameConnection.SendGameMessage(errorResponse);
+            return;
+        }
+        
+        var deviceLeds = DevicesPreset.LedPositionsByDevice[deviceIndex];
+        
+        var ledsJson = JsonSerializer.Serialize<IcueLed[]>(deviceLeds, IcueJsonContext.Default.IcueLedArray);
+        var ledPositionsResponse = $$"""{"result":{{ledsJson}}}""";
         _gameConnection.SendGameMessage(ledPositionsResponse);
     }
 
@@ -70,6 +99,25 @@ public class SdkHandler
         var ledsString = message.Params.LedsColors;
         // iterate trough LEDs, 0 alloc
         IterateLedsColors(ledsString);
+        ColorsUpdated?.Invoke(this, EventArgs.Empty);
+
+        // Here you would handle the LED colors, for now we just respond OK
+        RespondOk(message);
+    }
+
+    private void SetLedsColorsFlushBuffer(IcueGameMessage message)
+    {
+        if (message.Params?.LedsColorsByDeviceIndex == null)
+        {
+            RespondOk(message);
+            return;
+        }
+
+        foreach (var ledsString in message.Params.LedsColorsByDeviceIndex.Select(lc => lc.LedColors))
+        {
+            IterateLedsColors(ledsString);
+        }
+
         ColorsUpdated?.Invoke(this, EventArgs.Empty);
 
         // Here you would handle the LED colors, for now we just respond OK
