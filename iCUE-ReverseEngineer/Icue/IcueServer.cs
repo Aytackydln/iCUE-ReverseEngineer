@@ -71,8 +71,8 @@ public sealed class IcueServer : IDisposable, IAsyncDisposable
         var gameHandler = new GameHandler(gameConnection);
         gameHandler.GameDisconnected += HandleGameDisconnected;
         _games.Add(gameHandler);
-        gameConnection.Run();
         GameConnected?.Invoke(this, gameHandler);
+        gameConnection.Run();
 
         var pipeNameMessage = $@"\\.\pipe\{gamePidString}\{{4e0c98fd-e062-49d6-8f02-277ac54ead5d}}";
         SendUtilityOut(pipeNameMessage);
@@ -83,16 +83,23 @@ public sealed class IcueServer : IDisposable, IAsyncDisposable
 
     private void RestartGameWait()
     {
-        if (_utilityOut.IsConnected)
+        try
         {
-            _utilityOut.Write([]);
-            _utilityOut.Flush();
-            _utilityOut.Disconnect();
-        }
+            if (_utilityOut.IsConnected)
+            {
+                _utilityOut.Write([]);
+                _utilityOut.Flush();
+                _utilityOut.Disconnect();
+            }
 
-        _utilityOut.BeginWaitForConnection(UtilityOut, _utilityOut);
-        _utilityCallback.BeginWaitForConnection(UtilityCallback, _utilityCallback);
-        _utilityInPipe.BeginWaitForConnection(UtilityIn, _utilityInPipe);
+            _utilityOut.BeginWaitForConnection(UtilityOut, _utilityOut);
+            _utilityCallback.BeginWaitForConnection(UtilityCallback, _utilityCallback);
+            _utilityInPipe.BeginWaitForConnection(UtilityIn, _utilityInPipe);
+        }
+        catch (InvalidOperationException)
+        {
+            // Pipe is not connected, ignore
+        }
     }
 
     private void HandleGameDisconnected(object? sender, EventArgs e)

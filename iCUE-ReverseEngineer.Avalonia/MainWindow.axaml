@@ -8,7 +8,9 @@
         Background="Transparent"
         Loaded="Control_OnLoaded"
         Title="iCUE ReverseEngineered">
-    <StackPanel Name="MainPanel" Background="Transparent">
-        <TextBlock Name="TextBlock">Welcome to replica iCUE</TextBlock>
-    </StackPanel>
+    <ScrollViewer>
+        <StackPanel Name="MainPanel" Background="Transparent">
+            <TextBlock Name="TextBlock">Welcome to replica iCUE</TextBlock>
+        </StackPanel>
+    </ScrollViewer>
 </Window>

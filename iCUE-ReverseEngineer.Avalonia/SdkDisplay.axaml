@@ -8,6 +8,7 @@
     <Border BorderBrush="Brown" BorderThickness="2">
         <StackPanel>
             <TextBlock Name="SdkConnectionTitle">Game Title</TextBlock>
+            <TextBlock Name="ConnectionMode">Connection Mode Unknown</TextBlock>
             <StackPanel Name="GsiPanel" Orientation="Horizontal">
                 <Border BorderBrush="BlueViolet" BorderThickness="1" Margin="4">
                     <StackPanel>

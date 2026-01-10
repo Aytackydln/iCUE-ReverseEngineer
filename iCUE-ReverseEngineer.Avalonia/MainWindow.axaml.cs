@@ -33,20 +33,20 @@ public partial class MainWindow : Window
 
     private void IcueServerOnGameConnected(object? sender, GameHandler e)
     {
-        Dispatcher.UIThread.InvokeAsync(() =>
+        Dispatcher.UIThread.Invoke(() =>
         {
             var sdkDisplay = new SdkDisplay(e);
-            MainPanel.Children.Add(sdkDisplay);
+            MainPanel.Children.Insert(0, sdkDisplay);
             
-            e.GameDisconnected += eOnGameDisconnected(sdkDisplay);
+            e.GameDisconnected += OnGameDisconnected(sdkDisplay);
         });
 
-        EventHandler eOnGameDisconnected(SdkDisplay sdkDisplay)
+        EventHandler OnGameDisconnected(SdkDisplay sdkDisplay)
         {
             return (_, _) =>
             {
-                e.GameDisconnected -= eOnGameDisconnected(sdkDisplay);
-                Dispatcher.UIThread.InvokeAsync(() =>
+                e.GameDisconnected -= OnGameDisconnected(sdkDisplay);
+                Dispatcher.UIThread.Invoke(() =>
                 {
                     sdkDisplay.CollapseKeyboard();
                 });

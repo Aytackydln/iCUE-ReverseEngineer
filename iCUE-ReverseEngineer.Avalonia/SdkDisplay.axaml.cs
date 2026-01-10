@@ -48,10 +48,12 @@ public partial class SdkDisplay : UserControl
 
         SdkConnectionTitle.Text = $"SDK Connection, PID: {gameHandler.GamePid}";
 
+        _gameHandler.GsiHandler.GameConnected += GsiHandlerOnGameConnected;
         _gameHandler.GsiHandler.StateAdded += GsiHandlerOnStateAdded;
         _gameHandler.GsiHandler.StateRemoved += GsiHandlerOnStateRemoved;
         _gameHandler.GsiHandler.StatesCleared += GsiHandlerOnStatesCleared;
         _gameHandler.GsiHandler.EventAdded += GsiHandlerOnEventAdded;
+        _gameHandler.SdkHandler.GameConnected += SdkHandlerOnGameConnected;
         _gameHandler.SdkHandler.ColorsUpdated += SdkHandlerOnColorsUpdated;
     }
 
@@ -70,7 +72,7 @@ public partial class SdkDisplay : UserControl
         {
             var colorBox = new Border
             {
-                Background = Brushes.Gray,
+                Background = Brushes.Transparent,
                 Width = led.Width / 2,
                 Height = led.Height / 2,
             };
@@ -119,6 +121,14 @@ public partial class SdkDisplay : UserControl
         });
     }
 
+    private void GsiHandlerOnGameConnected(object? sender, IcueGsiConnectionEventArgs e)
+    {
+        Dispatcher.UIThread.Invoke(() =>
+        {
+            ConnectionMode.Text = $"GSI Mode, Game: {e.GameName}";
+        });
+    }
+
     private void GsiHandlerOnStateAdded(object? sender, IcueStateEventArgs icueStateEventArgs)
     {
         _states[icueStateEventArgs.StateName] = true;
@@ -147,6 +157,14 @@ public partial class SdkDisplay : UserControl
     {
         _events.Add(icueStateEventArgs.StateName);
         UpdateEvents();
+    }
+
+    private void SdkHandlerOnGameConnected(object? sender, EventArgs e)
+    {
+        Dispatcher.UIThread.Invoke(() =>
+        {
+            ConnectionMode.Text = "SDK Mode";
+        });
     }
 
     private void SdkHandlerOnColorsUpdated(object? sender, EventArgs e)
