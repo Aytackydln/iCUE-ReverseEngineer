@@ -144,7 +144,7 @@ public static class DevicesPreset
         LedsCount = KeyboardLedPositions.Length,
         LogicalLayout = 4,
         PhysicalLayout = 2,
-        Model = "K70 RGB PRO",
+        Model = "Aurora-RGB Virtual Keyboard",
         DeviceId = "2fe9dna9460s96l7c6ad4dc8v8a0f3da",
         CapsMask = 1
     };
@@ -155,7 +155,7 @@ public static class DevicesPreset
         LedsCount = HeadsetLedPositions.Length,
         LogicalLayout = 0,
         PhysicalLayout = 0,
-        Model = "HS80",
+        Model = "Aurora-RGB Virtual Headset",
         DeviceId = "a8944cbe2j5029a574bbs71h1eea4bf1",
         CapsMask = 3
     };
